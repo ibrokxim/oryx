@@ -1,5 +1,5 @@
 @php
-    $title = 'Создать дополнительную функцию';
+    $title = 'Создать дополнительную услугу';
 @endphp
 @extends('layouts.admin')
 @section('content')

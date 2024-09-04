@@ -113,7 +113,7 @@ php
         	            {{ Form::select('status', __('ui.status'), $item->status) }}
         	        </div>
                     <div class="new-flex w-two">
-        	            <p class="in-name">Дополнительные функции</p>
+        	            <p class="in-name">Дополнительные услуги</p>
         	            {{ Form::select('status', __('ui.status'), $item->status) }}
         	        </div>
 
