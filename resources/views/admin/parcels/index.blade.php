@@ -25,28 +25,13 @@
     </div>
 @endsection
 @section('content')
-
-    <?php /* ?><div class="buttons-top3">
-    <form action="">
-          <a class="" href="{{route('parcels.create')}}">Добавить +</a>
-        </form>
-      <form action="{{route('parcels.upload')}}" method="POST" enctype="multipart/form-data">
-        @csrf
-        <a href="/">Загрузить EXCEL +</a>
-        <input type="file" name="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" style="display: none;">
-        <input type="submit" style="display: none;">
-      </form>
-  </div><?php */ ?>
-
     <div class="content-wrap">
-
         <div style="margin-bottom: 20px; width: 100%">
             <h3>Посылки за месяц</h3>
             <p>Список активных посылок</p>
         </div>
 
         <div class="content">
-
 
             <div class="content-top">
                 <div class="content-head_wrap">
@@ -69,9 +54,12 @@
                                     fill="#E84438"/>
                             </svg>
                         </button>
-						<button type="button" id="toggle-button" class="btn-toggle btn ">
-							{{ request('parcel') === 'all' ? 'Показать за месяц' : 'Показать за все время' }}
-						</button>
+{{--						<button type="button" id="toggle-button" class="btn-toggle btn ">--}}
+{{--							{{ request('parcel') === 'all' ? 'Показать за месяц' : 'Показать за все время' }}--}}
+{{--						</button>--}}
+{{--                        <button type="button" id="toggle-button" class="btn-toggle btn ">--}}
+{{--                            Показать за все время--}}
+{{--                        </button>--}}
                     </form>
                 </div>
                 <div class="buttons-top">
@@ -518,10 +506,10 @@
                 }).then(() => location.reload());
             }
         };
-		
-		
+
+
 		document.addEventListener("DOMContentLoaded", function() {
-			const toggleButton = document.getElementById('toggle-button');
+			// const toggleButton = document.getElementById('toggle-button');
 			const filterForm = document.getElementById('filter-form');
 			const resetButton = document.getElementById('reset-button');
 
@@ -536,7 +524,7 @@
 				}
 				window.location.href = url.toString();
 			});
-			
+
 			resetButton.addEventListener('click', function() {
 				filterForm.reset();
 				const url = new URL(window.location.href);

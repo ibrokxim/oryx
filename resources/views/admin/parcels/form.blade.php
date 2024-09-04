@@ -1,4 +1,4 @@
-php
+@php
   $title = 'Данные пользователя';
 @endphp
 @extends('layouts.admin')
@@ -106,16 +106,20 @@ php
         		        </div>
         	        {{-- @endif --}}
 
-
-
         	        <div class="new-flex w-one">
         	            <p class="in-name">Статус</p>
         	            {{ Form::select('status', __('ui.status'), $item->status) }}
         	        </div>
                     <div class="new-flex w-two">
         	            <p class="in-name">Дополнительные услуги</p>
-        	            {{ Form::select('status', __('ui.status'), $item->status) }}
-        	        </div>
+                        <select name="functions" id="functions">
+                            <option value="">Выберите дополнительную услугу</option>
+                            @foreach($functions as $id => $name)
+                                <option value="{{ $id }}">{{ $name }}</option>
+                            @endforeach
+                        </select>
+
+                    </div>
 
                     <div class="new-flex">
         	            <p class="in-name">Оплачен</p>
@@ -140,23 +144,16 @@ php
         		        </div>
         	        @endif
 
-
-
         	    </div>
         		    <div class="buttons-group hide">
         		    	<a href="{{ url()->previous() }}">Отменить изменения <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.277344 7.03233L8.09108 13.8694V9.90854C10.5498 9.64637 12.5824 10.3457 14.2515 12.0147L15.5196 13.2828V11.4894C15.5196 6.83507 12.9558 4.30712 8.09108 4.07803V0.195312L0.277344 7.03233ZM2.53471 7.03278L6.60657 3.4699V5.54708H7.34942C11.2127 5.54708 13.3297 6.92211 13.8856 9.79361C11.9964 8.52925 9.76382 8.10583 7.2273 8.52859L6.60657 8.63204V10.5957L2.53471 7.03278Z" fill="#515151"/></svg></a>
-
         	            <button type="submit">Сохранить изменения <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.67902 0.46875H11.4909L13.9249 2.97016V12.7147C13.9249 13.4661 13.3157 14.0753 12.5643 14.0753H1.67902C0.927546 14.0753 0.318359 13.4661 0.318359 12.7147V1.82941C0.318359 1.07794 0.927546 0.46875 1.67902 0.46875ZM10.5233 1.83011V5.91208H3.72002V1.83011H1.67904V12.7154H3.03969V7.27274H11.2036V12.7154H12.5643V3.52362L10.9164 1.83011H10.5233ZM5.07843 4.55142V1.83011H9.1604V4.55142H5.07843ZM4.40039 8.63349V12.7155H9.84302V8.63349H4.40039ZM8.4824 2.51045H7.12174V3.8711H8.4824V2.51045Z" fill="white"/></svg>
-
 
         	            </button>
         	        </div>
-
         	</div>
-
 	    </form>
 	</div>
-
 
 	<script>
 		$(function(){

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\AdditionalFunction;
 use App\Models\Excel;
 use App\Models\Parcel;
 use App\Models\Recipient;
@@ -130,7 +131,8 @@ class ParcelController extends Controller
         abort_if(Gate::denies('parcels'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $item = Parcel::findOrFail($id);
         $users = Recipient::pluck('name', 'id');
-        return view('admin.parcels.form', compact('item', 'users'));
+        $functions = AdditionalFunction::pluck('name');
+        return view('admin.parcels.form', compact('item', 'users','functions'));
     }
 
     public function update(Request $request, $id)
