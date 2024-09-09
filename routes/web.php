@@ -1,13 +1,12 @@
 <?php
 
-use App\Http\Controllers\Admin\AdditionalFunctionsController;
-use App\Http\Controllers\Admin\RoleController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ReferalController;
 use App\Http\Controllers\Admin\IndController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\AjaxController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AdminController;
@@ -19,6 +18,7 @@ use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\Admin\RecipientController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Profile\ProfileParcelController;
+use App\Http\Controllers\Admin\AdditionalFunctionsController;
 
 
 Route::get('profile/dev-auth/{user}', function (User $user) {

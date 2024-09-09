@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
 use \Venturecraft\Revisionable\RevisionableTrait;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Parcel extends Model
 {
@@ -47,6 +46,16 @@ class Parcel extends Model
         'in_date',
     ];
 
+    public function deliveryMode(): HasOne
+    {
+        return $this->hasOne(DeliveryMode::class);
+
+    }
+    public function additionalFunctions()
+    {
+        return $this->hasMany(AdditionalFunction::class, 'parcel_additional_function');
+    }
+
     public function recipient()
     {
         return $this->hasOne('App\Models\Recipient', 'id', 'recipient_id');
@@ -84,12 +93,14 @@ class Parcel extends Model
         });
     }
 
-    public function scopeWithAndWhereHas($query, $relation, $constraint){
+    public function scopeWithAndWhereHas($query, $relation, $constraint)
+    {
         return $query->whereHas($relation, $constraint)
                      ->with([$relation => $constraint]);
     }
 
-    public function scopeWithAndWhereHasOr($query, $relation, $constraint){
+    public function scopeWithAndWhereHasOr($query, $relation, $constraint)
+    {
         return $query->orWhereHas($relation, $constraint)
                      ->with([$relation => $constraint]);
     }

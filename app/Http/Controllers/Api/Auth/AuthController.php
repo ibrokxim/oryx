@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
+use Laravel\Passport\Client;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use GuzzleHttp\Client as HttpClient;
-use Laravel\Passport\Client;
-use Laravel\Socialite\Facades\Socialite;
+use GuzzleHttp\Exception\ClientException;
 
 class AuthController extends Controller
 {
@@ -26,7 +26,7 @@ class AuthController extends Controller
             'password' => 'required|string'
         ]);
 
-        $user = \App\Models\User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
@@ -62,13 +62,13 @@ class AuthController extends Controller
                 'expires_in' => $result['expires_in'],
             ]);
 
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
+        } catch (ClientException $e) {
             $response = $e->getResponse();
             $responseBodyAsString = $response->getBody()->getContents();
             return response()->json(json_decode($responseBodyAsString, true), $response->getStatusCode());
         }
     }
-	
+
     public function logout(Request $request)
     {
         $request->user()->token()->revoke();
@@ -82,7 +82,7 @@ class AuthController extends Controller
     {
 		$user = $request->user();
 		$user["parcelActiveCount"] = $user->parcelActiveCount();
-		
+
         return response()->json($user);
     }
 }

@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\AdditionalFunction;
+use Carbon\Carbon;
 use App\Models\Excel;
 use App\Models\Parcel;
 use App\Models\Recipient;
 use App\Models\ParcelGood;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Models\DeliveryMode;
 use Illuminate\Support\Facades\DB;
+use App\Models\AdditionalFunction;
 use Illuminate\Support\Facades\Gate;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use Rap2hpoutre\FastExcel\FastExcel;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Component\HttpFoundation\Response;
 
 
@@ -22,9 +23,7 @@ class ParcelController extends Controller
 {
 	public function index(Request $request)
     {
-
         abort_if(Gate::denies('parcels'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
         $all = $request->get('parcel') === 'all';
         if ($all) {
             $items = Parcel::where('id', '!=', 0);
@@ -35,8 +34,8 @@ class ParcelController extends Controller
                 ->when(request('city') && request('out', 6) != 15, function ($q) {
                     $q->where('city', 'like', request('city') . '%');
                 })
-				->where('created_at', '>=', request('ds', now()->subMonth()->format('Y-m-d')))
-        		->where('created_at', '<=', request('de', now()->format('Y-m-d')) . ' 23:59')
+//				->where('created_at', '>=', request('ds', now()->subMonth()->format('Y-m-d')))
+//        		->where('created_at', '<=', request('de', now()->format('Y-m-d')) . ' 23:59')
                 ->when(request('in_status'), function ($q) {
                     $q->where('in_status', request('in_status') - 1);
                 })
@@ -85,19 +84,17 @@ class ParcelController extends Controller
         abort_if(Gate::denies('parcels'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $item = new Parcel();
         $users = Recipient::pluck('name', 'id');
-        return view('admin.parcels.form', compact('item', 'users'));
+        $functions = AdditionalFunction::pluck('name');
+        return view('admin.parcels.form', compact('item', 'users', 'functions'));
     }
 
     public function store(Request $request)
     {
-
-
         if ($request['prod_price'] === null) {
             $request['prod_price'] = 0;
         }
         abort_if(Gate::denies('parcels'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $request->validate([
-            // 'name'   =>  'required|max:190',
             'recipient_id' => 'required|exists:recipients,id',
             'goods' => 'required|array|min:1',
             'goods.name.*' => 'required',
@@ -105,9 +102,6 @@ class ParcelController extends Controller
         ]);
 
         $item = Parcel::create(array_merge($request->all(), ['name' => $request->track]));
-        // $item->user_id = $item->recipient->user_id;
-        // $item->save();
-
         $input_goods = $request->input('goods');
         $goods = [];
 
@@ -127,7 +121,6 @@ class ParcelController extends Controller
 
     public function edit(Parcel $item, $id)
     {
-
         abort_if(Gate::denies('parcels'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $item = Parcel::findOrFail($id);
         $users = Recipient::pluck('name', 'id');
@@ -139,7 +132,6 @@ class ParcelController extends Controller
     {
         abort_if(Gate::denies('parcels'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $request->validate([
-            // 'name'   =>  'required|max:190',
             'track' => 'required|max:190',
             'recipient_id' => 'required|exists:recipients,id',
         ]);
@@ -154,9 +146,8 @@ class ParcelController extends Controller
         $item->update($fill);
         $item->update(['user_id' => $item->recipient->user_id]);
 
+
         if ($fill['prod_price'] == $prod_price)
-
-
             return redirect()->route('parcels.index');
     }
 
@@ -227,100 +218,6 @@ class ParcelController extends Controller
 
         return (new FastExcel($list))->download('file.xlsx');
 
-        /*$items = Parcel::where('status', $status)
-        ->where('country_out', $out)
-        ->where('created_at', '>=', request('ds',now()->subMonth()->format('Y-m-d')).' 00:00')
-        ->where('created_at', '<=', request('de',now()->format('Y-m-d')).' 23:59')
-        ->when(request('city') && request('out',6)!=15, function($q){
-            $q->where('city', 'like', request('city').'%');
-        })->when(request('in_status'), function($q){
-            $q->where('in_status', request('in_status')-1);
-        })->when(request('in_city'), function($q){
-            if(request('in_city')==1)
-                $q->whereNotIn('in_city', ['Нур-Султан','Алматы']);
-            else
-                $q->where('in_city', request('in_city'));
-        })->when(Auth::user()->city, function($q){
-            $q->where('city', Auth::user()->city);
-        })->when(request('s'), function($q){
-            $q->where('user_id', request('s'))->orWhere('track', 'like', '%'.request('s').'%');
-        })->orderBy('id','desc')->get();
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-
-        // $header = ['UID','ФИО','Трек','Трек СДЭК','Декларации','Вес','Цена','Договор','Паспорт'];
-        $header = ['UID','Трек-номер','Город доставки','Наименование','ФИО получателя'];
-
-        if($status>=2){
-            $header[] = 'Вес';
-            $header[] = 'Номер посылки';
-        }
-
-        if($status>=4 || request('out')==15)
-            $header = ['UID','Трек','Номер посылки','Трек по стране','ФИО получателя','Город','Адрес','Телефон','Вес','Комментарий','Оплата'];
-
-        $header[] = 'Стоимость';
-        $header[] = 'Фото 1';
-        $header[] = 'Фото 2';
-
-        foreach ($header as $key => $title) {
-            $spreadsheet->getActiveSheet()->getColumnDimension(chr(ord('A')+$key))->setAutoSize(true);
-            $sheet->setCellValue(chr(ord('A')+$key).'1', $title);
-        }
-
-        $i = 2;
-
-        foreach ($items as $item) {
-
-            $c = 'A';
-            if($status>=4 || request('out')==15){
-                $sheet->setCellValue($c++.$i, $item->user_id);
-                $spreadsheet->getActiveSheet()->getCell($c++.$i)->setValueExplicit($item->track,\PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                $spreadsheet->getActiveSheet()->getCell($c++.$i)->setValueExplicit($item->pid,\PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                $spreadsheet->getActiveSheet()->getCell($c++.$i)->setValueExplicit($item->in_track,\PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                $sheet->setCellValue($c++.$i, $item->in_fio);
-                $sheet->setCellValue($c++.$i, $item->in_city);
-                $sheet->setCellValue($c++.$i, $item->in_address);
-                $spreadsheet->getActiveSheet()->getCell($c++.$i)->setValueExplicit($item->in_phone,\PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                $sheet->setCellValue($c++.$i, $item->weight);
-                $sheet->setCellValue($c++.$i, $item->in_comment);
-                $sheet->setCellValue($c++.$i, $item->payed?'Оплачена':'Не оплачена ');
-            }else{
-                $sheet->setCellValue($c++.$i, $item->user_id);
-                $spreadsheet->getActiveSheet()->getCell($c++.$i)->setValueExplicit($item->track,\PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                $sheet->setCellValue($c++.$i, $item->in_city ?? $item->city);
-                $str = '';
-                foreach ($item->goods as $good) {
-                    if($str) $str .= ', ';
-                    $str .= $good->name;
-                }
-                $sheet->setCellValue($c++.$i, $str);
-
-                $sheet->setCellValue($c++.$i, ($item->recipient->surname??'').' '.($item->recipient->name??'').' '.($item->recipient->fname??''));
-
-                if($status>=2){
-                    $sheet->setCellValue($c++.$i, $item->weight);
-                    $sheet->setCellValue($c++.$i, $item->pid);
-                }
-            }
-
-            dd($item);
-            $sheet->setCellValue($c++.$i, $item->goods->sum('price'));
-
-           if ($item->recipient) {
-            foreach ($item->recipient->getMedia('pass')->all() as $pass){
-                $sheet->setCellValue($c.$i, $pass->getUrl());
-                $sheet->getCell($c.$i)->getHyperlink()->setUrl($pass->getUrl());
-                $c++;
-            }
-           }
-
-            $i++;
-        }
-        $writer = new Xlsx($spreadsheet);
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment; filename="list.xlsx"');
-        $writer->save('php://output');*/
     }
 
     public function excel(Request $request, $id)
@@ -377,8 +274,6 @@ class ParcelController extends Controller
 
     public function replace(Request $request, $id)
     {
-
-        dd($request);
         $status = array_flip(__('ui.status'));
         if ($request->input('pid')) {
             $item = Parcel::find($request->input('pid'));

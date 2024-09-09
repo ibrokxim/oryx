@@ -23,29 +23,70 @@ class ProfileController extends Controller
     }
 
     public function settings(Request $request)
-	{
-		// Обработка POST-запроса
-		if ($request->isMethod('post')) {
-			if (!$request->input('name') || !$request->input('surname'))
-				return response()->json(['error' => 'Name and Surname are required'], 400);
+    {
+        $user = Auth::user();
 
-			$user = Auth::user();
-			$fill = $request->only(['name', 'fname', 'surname', 'phone', 'password']);
-			$fill['phone'] = preg_replace("/[^0-9]/", '', $fill['phone']);
+        if ($request->isMethod('post')) {
+            $request->validate([
+                'name' => 'required',
+                'surname' => 'required',
+                'phone' => 'nullable',
+                'password' => 'nullable|min:6',
+            ]);
 
-			if (!$fill['password']) {
-				unset($fill['password']);
-			} else {
-				$fill['password'] = Hash::make($fill['password']);
-			}
+            // Валидация настроек доставки
+            $request->validate([
+                'delivery_method' => 'nullable|in:pickup,address,pvz',
+                'delivery_address' => 'required_if:delivery_method,address|required_if:delivery_method,pickup|max:255',
+            ]);
 
-			$user->update($fill);
-			return response()->json(['message' => 'Settings updated'], 200);
-		}
+            // Обновление общих настроек пользователя
+            $fill = $request->only(['name', 'fname', 'surname', 'phone', 'password']);
+            $fill['phone'] = preg_replace("/[^0-9]/", '', $fill['phone']);
 
-		// Обработка GET-запроса
+            if (!$fill['password']) {
+                unset($fill['password']);
+            } else {
+                $fill['password'] = Hash::make($fill['password']);
+            }
+
+            $user->update($fill);
+
+            // Обновление настроек доставки
+            if ($request->has('delivery_method')) {
+                $user->deliveryModes()->updateOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'delivery_method' => $request->input('delivery_method'),
+                        'delivery_address' => $request->input('delivery_address'),
+                    ]
+                );
+            }
+
+            return response()->json(['message' => 'Settings updated'], 200);
+        }
+
+//		if ($request->isMethod('post')) {
+//			if (!$request->input('name') || !$request->input('surname'))
+//				return response()->json(['error' => 'Name and Surname are required'], 400);
+//
+//			$user = Auth::user();
+//			$fill = $request->only(['name', 'fname', 'surname', 'phone', 'password']);
+//			$fill['phone'] = preg_replace("/[^0-9]/", '', $fill['phone']);
+//
+//			if (!$fill['password']) {
+//				unset($fill['password']);
+//			} else {
+//				$fill['password'] = Hash::make($fill['password']);
+//			}
+//
+//			$user->update($fill);
+//			return response()->json(['message' => 'Settings updated'], 200);
+//		}
+
 		if ($request->isMethod('get')) {
 			$user = Auth::user();
+//            $user = User::where('id', '=', 1);
 			$recipients = $user->recipients; // Предполагается, что у пользователя есть связь "recipients"
 
 			return response()->json(['recipients' => $recipients], 200);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Profile;
 
 use App\Http\Controllers\Controller;
 use App\Models\Address;
+use App\Models\DeliveryMode;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,7 +39,6 @@ class ProfileParcelController extends Controller
 			});
 		}
 
-		// Сортировка по дате добавления
 		$items = $items->orderBy('created_at', 'desc')->get();
 
 		$cities = [];
@@ -64,7 +64,9 @@ class ProfileParcelController extends Controller
                 'recipient_id' => 'required',
                 'goods.name.*' => 'required',
                 'goods.price.*' => 'required|numeric|min:0',
-                'city_out' => 'required'
+                'city_out' => 'required',
+                'delivery_mode' => 'required|in:self-pickup,to-address,cdek-pickup',
+                'delivery_address' => 'required_if:delivery_mode,to-address|required_if:delivery_mode,cdek-pickup|max:255',
             ]);
 
             if ($request['prod_price'] == null) {
@@ -77,7 +79,9 @@ class ProfileParcelController extends Controller
                 $request['country_out'] = (int)$country->tab;
             }
 
-            $item = Parcel::create(array_merge($request->all(), ['user_id' => Auth::user()->id]));
+            $item = Parcel::create(array_merge($request->all(), [
+                'user_id' => Auth::user()->id,
+                ]));
 
             $input_goods = $request->input('goods');
             $goods = [];
@@ -95,8 +99,12 @@ class ProfileParcelController extends Controller
 
             $item->goods()->saveMany($goods);
 
-            // $this->sendNotifiaction(Auth::user(), 'regp', ['track' => $item->track, 'fio' => $item->fio]);
-
+            DeliveryMode::create([
+                'user_id' => Auth::user()->id,
+                'parcel_id' => $item->id,
+                'delivery_method' => $request->input('delivery_method'),
+                'delivery_address' => $request->input('delivery_address'),
+            ]);
             DB::commit();
             return response()->json(['status' => 'success', 'message' => 'Parcel created successfully', 'item' => $item]);
 
@@ -165,16 +173,16 @@ class ProfileParcelController extends Controller
         if (!count($items)) {
             return response()->json(['status' => 'error', 'message' => 'No parcels found']);
         }
-		
+
         $ids = [];
         $prod_price = 0;
         foreach ($items as $item) {
             $ids[] = $item->id;
             $prod_price += $item->prod_price;
         }
-		
-	
-		
+
+
+
         $tr = Transaction::create([
             'user_id' => Auth::user()->id,
             'count' => $prod_price,

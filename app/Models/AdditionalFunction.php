@@ -11,5 +11,9 @@ class AdditionalFunction extends Model
 
     protected $fillable = ['name', 'text','price'];
 
+    public function parcels()
+    {
+        return $this->belongsToMany(Parcel::class, 'parcel_additional_function');
+    }
 
 }

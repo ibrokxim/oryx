@@ -56,9 +56,6 @@
 
 
 
-
-
-
                     </form>
                 </div>
                 <div class="buttons-top">
@@ -516,7 +513,7 @@
 
 
 		document.addEventListener("DOMContentLoaded", function() {
-			// const toggleButton = document.getElementById('toggle-button');
+			 // const toggleButton = document.getElementById('toggle-button');
 			const filterForm = document.getElementById('filter-form');
 			const resetButton = document.getElementById('reset-button');
 
