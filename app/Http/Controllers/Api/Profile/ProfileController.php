@@ -37,7 +37,7 @@ class ProfileController extends Controller
             // Валидация настроек доставки
             $request->validate([
                 'delivery_method' => 'nullable|in:pickup,address,pvz',
-                'delivery_address' => 'required_if:delivery_method,address|required_if:delivery_method,pickup|max:255',
+                'delivery_address' => 'nullable|max:255',
             ]);
 
             // Обновление общих настроек пользователя

@@ -2,21 +2,19 @@
 
 namespace App\Http\Controllers\Api\Profile;
 
-use App\Http\Controllers\Controller;
-use App\Models\Address;
-use App\Models\DeliveryMode;
-use GuzzleHttp\Client;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\Parcel;
-use App\Models\ParcelGood;
-use App\Models\Setting;
-use App\Models\Transaction;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
-use App\Models\User;
-use App\Models\Recipient;
+use GuzzleHttp\Client;
+use App\Models\Parcel;
+use App\Models\Setting;
+use App\Models\Address;
+use App\Models\ParcelGood;
+use App\Models\Transaction;
+use App\Models\DeliveryMode;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class ProfileParcelController extends Controller
 {
@@ -25,12 +23,10 @@ class ProfileParcelController extends Controller
 		$items = Parcel::with('goods')
 			->where('user_id', Auth::user()->id);
 
-		// Добавить фильтрацию по статусу только если статус указан в запросе
 		if ($request->has('status')) {
 			$items = $items->where('status', $request->input('status'));
 		}
 
-		// Фильтрация по поисковому запросу
 		if ($request->input('s', '')) {
 			$items = $items->where(function ($query) use ($request) {
 				$query->where('name', 'like', "%" . $request->input('s') . "%")
@@ -65,8 +61,8 @@ class ProfileParcelController extends Controller
                 'goods.name.*' => 'required',
                 'goods.price.*' => 'required|numeric|min:0',
                 'city_out' => 'required',
-                'delivery_mode' => 'required|in:self-pickup,to-address,cdek-pickup',
-                'delivery_address' => 'required_if:delivery_mode,to-address|required_if:delivery_mode,cdek-pickup|max:255',
+                'delivery_method' => 'nullable|in:pickup,address,pvz',
+                'delivery_address' => 'nullable|max:255',
             ]);
 
             if ($request['prod_price'] == null) {
@@ -99,12 +95,14 @@ class ProfileParcelController extends Controller
 
             $item->goods()->saveMany($goods);
 
-            DeliveryMode::create([
-                'user_id' => Auth::user()->id,
-                'parcel_id' => $item->id,
-                'delivery_method' => $request->input('delivery_method'),
-                'delivery_address' => $request->input('delivery_address'),
-            ]);
+            DeliveryMode::updateOrCreate(
+                ['parcel_id' => $item->id],
+                [
+                    'user_id' => Auth::user()->id,
+                    'delivery_method' => $request->input('delivery_method'),
+                    'delivery_address' => $request->input('delivery_address'),
+                ]
+            );
             DB::commit();
             return response()->json(['status' => 'success', 'message' => 'Parcel created successfully', 'item' => $item]);
 

@@ -117,8 +117,19 @@
                                 <option value="<?php echo e($id); ?>"><?php echo e($name); ?></option>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </select>
-
                     </div>
+
+                        <div class="new-flex w-two">
+                            <p class="in-name">Метод доставки</p>
+                            <input type="text" name="delivery_method" value="<?php echo e($deliveryMethod); ?>" class="head-input" disabled/>
+                        </div>
+
+                        <?php if($deliveryMethod == 'pvz' || $deliveryMethod == 'address'): ?>
+                            <div class="new-flex w-two">
+                                <p class="in-name">Адрес доставки</p>
+                                <input type="text" name="delivery_address" value="<?php echo e($deliveryAddress); ?>" class="head-input" disabled/>
+                            </div>
+                        <?php endif; ?>
 
                     <div class="new-flex">
         	            <p class="in-name">Оплачен</p>

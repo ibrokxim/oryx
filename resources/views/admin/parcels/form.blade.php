@@ -118,8 +118,19 @@
                                 <option value="{{ $id }}">{{ $name }}</option>
                             @endforeach
                         </select>
-
                     </div>
+
+                        <div class="new-flex w-two">
+                            <p class="in-name">Метод доставки</p>
+                            <input type="text" name="delivery_method" value="{{ $deliveryMethod }}" class="head-input" disabled/>
+                        </div>
+
+                        @if($deliveryMethod == 'pvz' || $deliveryMethod == 'address')
+                            <div class="new-flex w-two">
+                                <p class="in-name">Адрес доставки</p>
+                                <input type="text" name="delivery_address" value="{{ $deliveryAddress }}" class="head-input" disabled/>
+                            </div>
+                        @endif
 
                     <div class="new-flex">
         	            <p class="in-name">Оплачен</p>

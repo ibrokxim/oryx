@@ -101,6 +101,7 @@ class ParcelController extends Controller
             'goods.price.*' => 'required',
         ]);
 
+
         $item = Parcel::create(array_merge($request->all(), ['name' => $request->track]));
         $input_goods = $request->input('goods');
         $goods = [];
@@ -125,7 +126,10 @@ class ParcelController extends Controller
         $item = Parcel::findOrFail($id);
         $users = Recipient::pluck('name', 'id');
         $functions = AdditionalFunction::pluck('name');
-        return view('admin.parcels.form', compact('item', 'users','functions'));
+        $deliveryMode = DeliveryMode::where('parcel_id', $id)->first();
+        $deliveryMethod = $deliveryMode ? $deliveryMode->delivery_method : null;
+        $deliveryAddress = $deliveryMode ? $deliveryMode->delivery_address : null;
+        return view('admin.parcels.form', compact('item', 'users','functions', 'deliveryMethod', 'deliveryAddress'));
     }
 
     public function update(Request $request, $id)

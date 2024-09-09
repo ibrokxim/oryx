@@ -82,7 +82,9 @@ class AuthController extends Controller
     {
 		$user = $request->user();
 		$user["parcelActiveCount"] = $user->parcelActiveCount();
-
+        $deliveryMode = $user->deliveryModes()->first();
+        $user["delivery_method"] = $deliveryMode ? $deliveryMode->delivery_method : null;
+        $user["delivery_address"] = $deliveryMode ? $deliveryMode->delivery_address : null;
         return response()->json($user);
     }
 }
