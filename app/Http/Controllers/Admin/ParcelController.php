@@ -85,7 +85,10 @@ class ParcelController extends Controller
         $item = new Parcel();
         $users = Recipient::pluck('name', 'id');
         $functions = AdditionalFunction::pluck('name');
-        return view('admin.parcels.form', compact('item', 'users', 'functions'));
+        $deliveryMode = DeliveryMode::where('parcel_id')->first();
+        $deliveryMethod = $deliveryMode ? $deliveryMode->delivery_method : null;
+        $deliveryAddress = $deliveryMode ? $deliveryMode->delivery_address : null;
+        return view('admin.parcels.form', compact('item', 'users', 'functions','deliveryMethod', 'deliveryAddress'));
     }
 
     public function store(Request $request)

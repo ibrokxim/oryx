@@ -10,4 +10,6 @@ class MetaTeg extends Model
     use HasFactory;
 
     protected $connection = 'mysql_admin';
+    protected $table = 'meta_tegs';
+
 }

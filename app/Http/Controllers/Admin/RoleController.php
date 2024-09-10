@@ -4,10 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
-use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
 use Spatie\Permission\Models\Permission;
-use Symfony\Component\HttpFoundation\Response;
 
 class RoleController extends Controller
 {

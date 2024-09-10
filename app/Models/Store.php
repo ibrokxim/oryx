@@ -10,4 +10,9 @@ class Store extends Model
     use HasFactory;
 
     protected $connection = 'mysql_admin';
+
+    public function metaTeg()
+    {
+        return $this->hasOne(MetaTeg::class, 'code', 'code');
+    }
 }

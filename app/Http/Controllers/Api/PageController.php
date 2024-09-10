@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Mail\Email;
+use App\Models\MetaTeg;
 use App\Models\News;
 use App\Models\Store;
 use App\Models\Review;
@@ -14,6 +15,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Services\ShortcodeService;
 use App\Services\Admin\PageService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 
@@ -54,17 +56,35 @@ class PageController extends Controller
 
     }
 
-    public function store($slug) {
-
+    public function store($slug)
+    {
         $store = Store::where('slug', $slug)->first();
-        if ($store) {
-			$store->img = url('storage/' . $store->img);
 
+        if ($store) {
+            // Найдем все записи из meta_tegs, где name совпадает с name из store
+            $metaTegs = MetaTeg::where('name', $store->name)->pluck('code');
+
+            if ($metaTegs->isEmpty()) {
+                return response()->json(['message' => 'Meta tags not found for this store'], 404);
+            }
+
+            // Преобразование изображения для ответа
+            $store->img = url('storage/' . $store->img);
+
+            // Получаем данные из ShortcodeService
             $data = ShortcodeService::doShortcode('magazin', ['store-name' => $store->name]);
-            return response()->json(['store' => $store, 'data' => $data], 200);
+
+            // Формируем ответ с данными магазина и metaTegs
+            return response()->json([
+                'store' => $store,
+                'data' => $data,
+                'meta' => $metaTegs,
+            ], 200);
+
         } else {
-            return response()->json(['message' => 'Not Found'], 404);
+            return response()->json(['message' => 'Store Not Found'], 404);
         }
+
     }
 
     public function reviews() {

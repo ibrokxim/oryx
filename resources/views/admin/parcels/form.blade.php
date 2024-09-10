@@ -3,24 +3,17 @@
 @endphp
 @extends('layouts.admin')
 @section('content')
-
-
 	<div class="content-wrap">
-
 	   <form method="POST" enctype="multipart/form-data" action="{{$item->id?route('parcels.update', $item->id):route('parcels.store', $item->id)}}">
     			@csrf
     	        @if($item->id)
     	          @method('PUT')
     	        @endif
-
     	    <div class="buttons-top">
-
                 <button type="submit" class="save"><svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.67902 0.46875H11.4909L13.9249 2.97016V12.7147C13.9249 13.4661 13.3157 14.0753 12.5643 14.0753H1.67902C0.927546 14.0753 0.318359 13.4661 0.318359 12.7147V1.82941C0.318359 1.07794 0.927546 0.46875 1.67902 0.46875ZM10.5233 1.83011V5.91208H3.72002V1.83011H1.67904V12.7154H3.03969V7.27274H11.2036V12.7154H12.5643V3.52362L10.9164 1.83011H10.5233ZM5.07843 4.55142V1.83011H9.1604V4.55142H5.07843ZM4.40039 8.63349V12.7155H9.84302V8.63349H4.40039ZM8.4824 2.51045H7.12174V3.8711H8.4824V2.51045Z" fill="white"/></svg>
         	         Сохранить
         	    </button>
-
                 <a class="go-back" href="{{ url()->previous() }}"> <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.734375 7.99988L9.49987 15.6697V11.2264C12.258 10.9323 14.5383 11.7168 16.4106 13.5891L17.8332 15.0117V12.9999C17.8332 7.7786 14.9571 4.94273 9.49987 4.68574V0.330078L0.734375 7.99988ZM3.26537 7.9999L7.83322 4.00304V6.33323H8.66655C13.0004 6.33323 15.3753 7.87575 15.9988 11.097C13.8795 9.67865 11.375 9.20365 8.52955 9.6779L7.83322 9.79396V11.9968L3.26537 7.9999Z" fill="white"/></svg>Назад</a>
-
             </div>
 
         	<div class="content content-inner">
@@ -38,12 +31,7 @@
                     </div>
                 @endif
 
-        	        {{-- <div class="new-flex">
-        	            <p class="in-name">Название</p>
-        	            <input type="text" name="name" value="{{ old('name', $item->name) }}" class="head-input" />
-        	        </div> --}}
-
-        	        @if(!$item->id)
+                    @if(!$item->id)
                         <div id="goods" style="width: 100%;">
                             <div class="create-flex good new-flex">
                                 <p class="input-item in-name">Декларация</p>
@@ -122,7 +110,7 @@
 
                         <div class="new-flex w-two">
                             <p class="in-name">Метод доставки</p>
-                            <input type="text" name="delivery_method" value="{{ $deliveryMethod }}" class="head-input" disabled/>
+                            <input type="text" name="delivery_method" value="{{ $deliveryMethod === 'pvz' ? 'Пункт выдачи СДЭК' : ($deliveryMethod === 'address' ? 'До адреса(службой СДЭК)' : ($deliveryMethod === 'pickup' ? 'Самовывоз со склада(Алматы)' : $deliveryMethod)) }}" class="head-input" disabled/>
                         </div>
 
                         @if($deliveryMethod == 'pvz' || $deliveryMethod == 'address')
