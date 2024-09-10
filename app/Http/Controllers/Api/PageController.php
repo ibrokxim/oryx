@@ -64,9 +64,6 @@ class PageController extends Controller
             // Найдем все записи из meta_tegs, где name совпадает с name из store
             $metaTegs = MetaTeg::where('name', $store->name)->pluck('code');
 
-            if ($metaTegs->isEmpty()) {
-                return response()->json(['message' => 'Meta tags not found for this store'], 404);
-            }
 
             // Преобразование изображения для ответа
             $store->img = url('storage/' . $store->img);
