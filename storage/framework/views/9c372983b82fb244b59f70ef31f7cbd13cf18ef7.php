@@ -102,10 +102,9 @@
         	        </div>
                     <div class="new-flex w-two">
         	            <p class="in-name">Дополнительные услуги</p>
-                        <select name="functions" id="functions">
-                            <option value="">Выберите дополнительную услугу</option>
+                        <select name="additional_functions" id="functions">
                             <?php $__currentLoopData = $functions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $id => $name): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <option value="<?php echo e($id); ?>"><?php echo e($name); ?></option>
+                                <option value="<?php echo e($id); ?>" <?php echo e($item->additionalFunctions->contains($id) ? 'selected' : ''); ?>><?php echo e($name); ?></option>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </select>
                     </div>

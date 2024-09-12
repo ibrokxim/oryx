@@ -20,7 +20,7 @@ class ProfileParcelController extends Controller
 {
 	public function index(Request $request)
 	{
-		$items = Parcel::with('goods')
+		$items = Parcel::with('goods', 'additionalFunctions')
 			->where('user_id', Auth::user()->id);
 
 		if ($request->has('status')) {
@@ -38,7 +38,8 @@ class ProfileParcelController extends Controller
 		$items = $items->orderBy('created_at', 'desc')->get();
 
 		$cities = [];
-		if ($request->input('status') == 3) {
+		if ($request->input('status') == 3)
+        {
 			$cities = ['Город'];
 			$countries = Setting::where([['type', 2], ['active', 1]])->get();
 			foreach ($countries as $country) {

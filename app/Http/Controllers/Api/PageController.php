@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Mail\Email;
-use App\Models\MetaTeg;
 use App\Models\News;
 use App\Models\Store;
 use App\Models\Review;
+use App\Models\MetaTeg;
 use App\Models\Element;
 use App\Models\Question;
 use App\Models\Category;
@@ -15,9 +15,9 @@ use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Services\ShortcodeService;
 use App\Services\Admin\PageService;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
+// кто читает этот код, не оставайся в этой компании надолго
 
 class PageController extends Controller
 {
@@ -27,7 +27,8 @@ class PageController extends Controller
         $this->pageService = $pageService;
     }
 
-    public function about() {
+    public function about()
+    {
         $data = $this->pageService;
         return response()->json(['data' => $data], 200);
     }
@@ -61,17 +62,11 @@ class PageController extends Controller
         $store = Store::where('slug', $slug)->first();
 
         if ($store) {
-            // Найдем все записи из meta_tegs, где name совпадает с name из store
-            $metaTegs = MetaTeg::where('name', $store->name)->pluck('code');
-
-
-            // Преобразование изображения для ответа
+            $metaTegs = MetaTeg::where('name', $store->name)->pluck('code')->implode(' ');
             $store->img = url('storage/' . $store->img);
 
-            // Получаем данные из ShortcodeService
             $data = ShortcodeService::doShortcode('magazin', ['store-name' => $store->name]);
 
-            // Формируем ответ с данными магазина и metaTegs
             return response()->json([
                 'store' => $store,
                 'data' => $data,

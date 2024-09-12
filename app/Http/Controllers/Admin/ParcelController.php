@@ -102,6 +102,8 @@ class ParcelController extends Controller
             'goods' => 'required|array|min:1',
             'goods.name.*' => 'required',
             'goods.price.*' => 'required',
+            'additional_functions' => 'nullable',
+            'additional_functions.*' => 'exists:additional_functions,id',
         ]);
 
 
@@ -119,6 +121,12 @@ class ParcelController extends Controller
         }
 
         $item->goods()->saveMany($goods);
+
+        if ($request->has('additional_functions')) {
+            foreach ($request->input('additional_functions') as $functionId) {
+                $item->additionalFunctions()->attach($functionId);
+            }
+        }
 
         return redirect()->route('parcels.index');
     }
@@ -141,6 +149,8 @@ class ParcelController extends Controller
         $request->validate([
             'track' => 'required|max:190',
             'recipient_id' => 'required|exists:recipients,id',
+            'additional_functions' => 'nullable',
+            'additional_functions.*' => 'exists:additional_functions,id',
         ]);
 
         $item = Parcel::findOrFail($id);
@@ -152,7 +162,12 @@ class ParcelController extends Controller
 
         $item->update($fill);
         $item->update(['user_id' => $item->recipient->user_id]);
-
+        // Обновление дополнительных услуг
+        if ($request->has('additional_functions')) {
+            $item->additionalFunctions()->sync($request->input('additional_functions'));
+        } else {
+            $item->additionalFunctions()->detach();
+        }
 
         if ($fill['prod_price'] == $prod_price)
             return redirect()->route('parcels.index');

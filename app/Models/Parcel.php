@@ -53,7 +53,7 @@ class Parcel extends Model
     }
     public function additionalFunctions()
     {
-        return $this->hasMany(AdditionalFunction::class, 'parcel_additional_function');
+        return $this->belongsToMany(AdditionalFunction::class, 'parcel_additional_function','parcel_id', 'additional_function_id');
     }
 
     public function recipient()

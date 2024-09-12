@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\ContactShipped;
 use App\Models\Country;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Http\Request;
+use App\Mail\ContactShipped;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Mail;
 
 class MailController extends Controller

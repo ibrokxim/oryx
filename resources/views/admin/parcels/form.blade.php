@@ -100,10 +100,10 @@
         	        </div>
                     <div class="new-flex w-two">
         	            <p class="in-name">Дополнительные услуги</p>
-                        <select name="functions" id="functions">
+                        <select name="additional_functions" id="functions">
                             <option value="">Выберите дополнительную услугу</option>
                             @foreach($functions as $id => $name)
-                                <option value="{{ $id }}">{{ $name }}</option>
+                                <option value="{{ $id }}" {{ $item->additionalFunctions->contains($id) ? 'selected' : '' }}>{{ $name }}</option>
                             @endforeach
                         </select>
                     </div>

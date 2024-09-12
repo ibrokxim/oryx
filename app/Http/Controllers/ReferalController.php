@@ -2,24 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Referal;
 use App\Models\Setting;
-use App\Models\User;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Foundation\Auth\RedirectsUsers;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Role;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Foundation\Auth\RedirectsUsers;
 
 class ReferalController extends Controller
 {
-
     use RedirectsUsers;
     public function referal_register(Request $request, $user_id)
     {
-        //dd($user_id);
-
         if($request->method() === 'POST'){
 
             $request->validate([
@@ -42,21 +39,16 @@ class ReferalController extends Controller
                     'disable' => 0,
                 ],
                 //Integration
-                'id_orx' => 'ORX'.(User::orderBy('id', 'DESC')->get()[0]['id'] + 1),
-                //
+                'id_orx' => 'ORX'.(User::ordinateerBy('id', 'DESC')->get()[0]['id'] + 1),
             ]);
             $item->syncRoles([Role::where('name','users')->first()->id]);
 
-
             $user_id = $request->only(['user_id']);
-            //dd($request, $user_id);
-
             $referal = new Referal;
             $referal->user_id = $user_id['user_id'];
             $referal->friend_id = $item->id;
             $referal->status = 'регистрирован';
             $referal->save();
-            //dd($request, $referal);
 
             $credentials = $request->only('email', 'password');
             Auth::attempt($credentials);

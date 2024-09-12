@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\ContactShipped;
 use App\Mail\Email;
-use App\Mail\OrderShipped;
-use App\Models\Category;
-use App\Models\Category_Store;
-use App\Models\Element;
 use App\Models\News;
-use App\Models\Question;
-use App\Models\Review;
 use App\Models\Store;
-use App\Services\ShortcodeService;
-use Illuminate\Http\Request;
+use App\Models\Review;
+use App\Models\Element;
+use App\Models\Category;
+use App\Models\Question;
+use App\Mail\OrderShipped;
 use Illuminate\Support\Arr;
+use Illuminate\Http\Request;
+use App\Models\Category_Store;
+use App\Services\ShortcodeService;
 use Illuminate\Support\Facades\Mail;
 
 class PageController extends Controller
