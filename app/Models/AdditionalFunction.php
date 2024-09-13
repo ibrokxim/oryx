@@ -13,7 +13,6 @@ class AdditionalFunction extends Model
 
     public function parcels()
     {
-        return $this->belongsToMany(Parcel::class, 'parcel_additional_function', 'additional_function_id', 'parcel_id');
+        return $this->belongsToMany(Parcel::class, 'parcel_additional_function', 'parcel_id', 'additional_function_id');
     }
-
 }

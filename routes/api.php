@@ -33,7 +33,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('profile/instead', [ProfileController::class, 'instead']);
 
 
-	Route::get('/profile/parcels', [ProfileParcelController::class, 'index']);
+	//Route::get('/profile/parcels', [ProfileParcelController::class, 'index']);
     Route::post('/profile/parcels', [ProfileParcelController::class, 'store']);
     Route::delete('/profile/parcels/{id}', [ProfileParcelController::class, 'delete']);
     Route::post('/profile/parcels/{id}/pay', [ProfileParcelController::class, 'pay']);
@@ -41,7 +41,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/profile/parcels/{id}/delivery', [ProfileParcelController::class, 'delivery']);
     Route::post('/profile/parcels/delivery-many', [ProfileParcelController::class, 'deliveryMany']);
 });
-
+Route::get('/profile/parcels', [ProfileParcelController::class, 'index']);
 Route::post('/email/verification-notification', [VerificationController::class, 'resend'])
 	->middleware('auth:api')
     ->name('api.verification.send');

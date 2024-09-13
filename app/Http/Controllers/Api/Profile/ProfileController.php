@@ -34,13 +34,11 @@ class ProfileController extends Controller
                 'password' => 'nullable|min:6',
             ]);
 
-            // Валидация настроек доставки
             $request->validate([
                 'delivery_method' => 'nullable|in:pickup,address,pvz',
                 'delivery_address' => 'nullable|max:255',
             ]);
 
-            // Обновление общих настроек пользователя
             $fill = $request->only(['name', 'fname', 'surname', 'phone', 'password']);
             $fill['phone'] = preg_replace("/[^0-9]/", '', $fill['phone']);
 

@@ -2,21 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Parcel;
-
+use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
-
-use Gate;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Hash;
-
-use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Gate;
+use App\Http\Controllers\Controller;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
 {

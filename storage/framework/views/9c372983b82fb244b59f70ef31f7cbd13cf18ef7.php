@@ -1,5 +1,5 @@
 <?php
-  $title = 'Данные пользователя';
+    $title = 'Данные пользователя';
 ?>
 
 <?php $__env->startSection('content'); ?>
@@ -9,6 +9,7 @@
     	        <?php if($item->id): ?>
     	          <?php echo method_field('PUT'); ?>
     	        <?php endif; ?>
+
     	    <div class="buttons-top">
                 <button type="submit" class="save"><svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.67902 0.46875H11.4909L13.9249 2.97016V12.7147C13.9249 13.4661 13.3157 14.0753 12.5643 14.0753H1.67902C0.927546 14.0753 0.318359 13.4661 0.318359 12.7147V1.82941C0.318359 1.07794 0.927546 0.46875 1.67902 0.46875ZM10.5233 1.83011V5.91208H3.72002V1.83011H1.67904V12.7154H3.03969V7.27274H11.2036V12.7154H12.5643V3.52362L10.9164 1.83011H10.5233ZM5.07843 4.55142V1.83011H9.1604V4.55142H5.07843ZM4.40039 8.63349V12.7155H9.84302V8.63349H4.40039ZM8.4824 2.51045H7.12174V3.8711H8.4824V2.51045Z" fill="white"/></svg>
         	         Сохранить
@@ -17,12 +18,8 @@
             </div>
 
         	<div class="content content-inner">
-
         	    <div class="prof-head">Редактировать посылку</div>
-
         	    <div class="prof-inputs flex flex-wrap">
-
-
         	        <?php if($errors->any()): ?>
                     <div class="alert alert-danger">
                         <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -103,6 +100,7 @@
                     <div class="new-flex w-two">
         	            <p class="in-name">Дополнительные услуги</p>
                         <select name="additional_functions" id="functions">
+                            <option value="">Выберите дополнительную услугу</option>
                             <?php $__currentLoopData = $functions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $id => $name): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <option value="<?php echo e($id); ?>" <?php echo e($item->additionalFunctions->contains($id) ? 'selected' : ''); ?>><?php echo e($name); ?></option>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>

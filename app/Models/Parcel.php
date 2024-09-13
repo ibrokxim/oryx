@@ -51,9 +51,20 @@ class Parcel extends Model
         return $this->hasOne(DeliveryMode::class);
 
     }
+
     public function additionalFunctions()
     {
         return $this->belongsToMany(AdditionalFunction::class, 'parcel_additional_function','parcel_id', 'additional_function_id');
+    }
+    public function getAdditionalFunctionsInfo()
+    {
+        return $this->additionalFunctions->map(function ($function) {
+            return [
+                'id' => $function->id,
+                'name' => $function->name,
+                'price' => $function->price, // Предполагается, что у дополнительной услуги есть поле price
+            ];
+        });
     }
 
     public function recipient()

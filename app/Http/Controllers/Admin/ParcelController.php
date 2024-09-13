@@ -67,7 +67,8 @@ class ParcelController extends Controller
         $items = $items->where('status', $request->input('status', 0))->orderBy('id', 'desc')->paginate(50);
         $count_ = $count_->select(DB::raw('count(*) as c,status'))->groupBy('status')->get();
         $count = [];
-        foreach ($count_ as $p) {
+        foreach ($count_ as $p)
+        {
             $count[$p->status] = $p->c;
         }
 
@@ -93,7 +94,8 @@ class ParcelController extends Controller
 
     public function store(Request $request)
     {
-        if ($request['prod_price'] === null) {
+        if ($request['prod_price'] === null)
+        {
             $request['prod_price'] = 0;
         }
         abort_if(Gate::denies('parcels'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -111,7 +113,8 @@ class ParcelController extends Controller
         $input_goods = $request->input('goods');
         $goods = [];
 
-        for ($i = 0; $i < count($input_goods['name']); $i++) {
+        for ($i = 0; $i < count($input_goods['name']); $i++)
+        {
             $goods[] = new ParcelGood([
                 'parcel_id' => $item->id,
                 'name' => $input_goods['name'][$i],
@@ -122,10 +125,9 @@ class ParcelController extends Controller
 
         $item->goods()->saveMany($goods);
 
-        if ($request->has('additional_functions')) {
-            foreach ($request->input('additional_functions') as $functionId) {
-                $item->additionalFunctions()->attach($functionId);
-            }
+        if ($request->has('additional_functions'))
+        {
+            $item->additionalFunctions()->sync($request->input('additional_functions'));
         }
 
         return redirect()->route('parcels.index');
@@ -163,9 +165,11 @@ class ParcelController extends Controller
         $item->update($fill);
         $item->update(['user_id' => $item->recipient->user_id]);
         // Обновление дополнительных услуг
-        if ($request->has('additional_functions')) {
+        if ($request->has('additional_functions'))
+        {
             $item->additionalFunctions()->sync($request->input('additional_functions'));
-        } else {
+        } else
+        {
             $item->additionalFunctions()->detach();
         }
 
@@ -192,7 +196,8 @@ class ParcelController extends Controller
 
     public function upload(Request $request)
     {
-        if ($request->file('file')) {
+        if ($request->file('file'))
+        {
             $item = Excel::create();
             $item->addMediaFromRequest('file')->toMediaCollection('excel');
             return redirect()->route('parcels.excel', $item->id);
@@ -201,7 +206,8 @@ class ParcelController extends Controller
 
     public function load(Request $request, $status = 0)
     {
-        if (!$request->input('out') || $request->input('out') == 0) {
+        if (!$request->input('out') || $request->input('out') == 0)
+        {
             $out = 6;
         } else {
             $out = $request->input('out');
@@ -213,15 +219,13 @@ class ParcelController extends Controller
             ->where('created_at', '<=', request('de', now()->format('Y-m-d')) . ' 23:59')
             ->get();
 
-        //dd($items[0]);
-
         $parcels = [];
 
         $status = __('ui.status');
 
         $test = '';
-        foreach ($items as $item) {
-
+        foreach ($items as $item)
+        {
             $parcels[] = [
                 'Трек-номер' => $item->track,
                 'UID' => $item->user_id,
@@ -233,13 +237,10 @@ class ParcelController extends Controller
                 'Стоимость' => $item->prod_price,
                 'Город доставки' => $item->city,
             ];
-
         }
-
         $list = collect($parcels);
 
         return (new FastExcel($list))->download('file.xlsx');
-
     }
 
     public function excel(Request $request, $id)
@@ -299,8 +300,6 @@ class ParcelController extends Controller
         $status = array_flip(__('ui.status'));
         if ($request->input('pid')) {
             $item = Parcel::find($request->input('pid'));
-            //dd($request);
-
 
             if ($request->input('p')) {
                 $item->pid = $request->input('p');
