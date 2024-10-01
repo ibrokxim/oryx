@@ -17,7 +17,6 @@ use App\Services\ShortcodeService;
 use App\Services\Admin\PageService;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
-// кто читает этот код, не оставайся в этой компании надолго
 
 class PageController extends Controller
 {

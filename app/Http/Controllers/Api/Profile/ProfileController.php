@@ -50,7 +50,6 @@ class ProfileController extends Controller
 
             $user->update($fill);
 
-            // Обновление настроек доставки
             if ($request->has('delivery_method')) {
                 $user->deliveryModes()->updateOrCreate(
                     ['user_id' => $user->id],

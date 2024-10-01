@@ -1,15 +1,18 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\MetaTegController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\Auth\AuthController;
-use App\Http\Controllers\Api\Profile\ProfileController;
-use App\Http\Controllers\Api\Auth\RegisterController;
-use App\Http\Controllers\Api\PageController;
-use App\Http\Controllers\Api\Auth\VerificationController;
 use App\Http\Controllers\Api\MailController;
-use App\Http\Controllers\Api\Profile\ProfileParcelController;
+use App\Http\Controllers\Api\PageController;
+use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Auth\SocialController;
+use App\Http\Controllers\Api\Auth\RegisterController;
+use App\Http\Controllers\Api\Profile\ProfileController;
+use App\Http\Controllers\Api\Auth\VerificationController;
+// КТО ЧИТАЕТ ЭТОТ КОД, НЕ ОСТАВАЙСЯ ДОЛГО В ЭТОЙ КОМПАНИИ
+use App\Http\Controllers\Api\Profile\ProfileParcelController;
+
+
 
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [RegisterController::class, 'register']);
@@ -32,7 +35,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('profile/referal', [ProfileController::class, 'referal']);
     Route::post('profile/instead', [ProfileController::class, 'instead']);
 
-
 	//Route::get('/profile/parcels', [ProfileParcelController::class, 'index']);
     Route::post('/profile/parcels', [ProfileParcelController::class, 'store']);
     Route::delete('/profile/parcels/{id}', [ProfileParcelController::class, 'delete']);
@@ -41,6 +43,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/profile/parcels/{id}/delivery', [ProfileParcelController::class, 'delivery']);
     Route::post('/profile/parcels/delivery-many', [ProfileParcelController::class, 'deliveryMany']);
 });
+
 Route::get('/profile/parcels', [ProfileParcelController::class, 'index']);
 Route::post('/email/verification-notification', [VerificationController::class, 'resend'])
 	->middleware('auth:api')
@@ -62,10 +65,14 @@ Route::get('contacts', [PageController::class, 'contactsUs']);
 Route::get('politika', [PageController::class, 'politika']);
 Route::get('usloviya', [PageController::class, 'usloviya']);
 Route::get('buy-me', [PageController::class, 'buy_me']);
+Route::get('home', [PageController::class, 'schema']);
 
 Route::post('send', [PageController::class, 'send']);
 Route::post('email', [PageController::class, 'email']);
 Route::post('review', [PageController::class, 'review']);
+Route::get('meta-tegs/{slug}', [MetaTegController::class, 'showWithoutCategory']);
+Route::get('meta-tegs/{category}/{slug}', [MetaTegController::class, 'showWithCategory']);
+
 
 Route::get('/login/google', [SocialController::class, 'redirect']);
 Route::get('/login/google/callback', [SocialController::class, 'callback']);
