@@ -20,7 +20,7 @@
                         </div>
 
                         <div class="about-item wow fadeInRight" style="max-width: 510px; visibility: visible; animation-duration: 1.5s; animation-name: fadeInRight;" data-wow-offset="25" data-wow-duration="1.5s">
-
+                            <a href="{{ url('/pay') }}"> Оплата</a>
                             <div class="title about-title">
                                 Как заказать доставку посылки из США?
                             </div>

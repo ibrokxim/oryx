@@ -1,18 +1,16 @@
 <?php
 
-use App\Http\Controllers\MetaTegController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MetaTegController;
 use App\Http\Controllers\Api\MailController;
 use App\Http\Controllers\Api\PageController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Auth\SocialController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Profile\ProfileController;
 use App\Http\Controllers\Api\Auth\VerificationController;
-// КТО ЧИТАЕТ ЭТОТ КОД, НЕ ОСТАВАЙСЯ ДОЛГО В ЭТОЙ КОМПАНИИ
 use App\Http\Controllers\Api\Profile\ProfileParcelController;
-
-
 
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [RegisterController::class, 'register']);
@@ -34,7 +32,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('profile/transactions', [ProfileController::class, 'transactions']);
     Route::get('profile/referal', [ProfileController::class, 'referal']);
     Route::post('profile/instead', [ProfileController::class, 'instead']);
-
 	//Route::get('/profile/parcels', [ProfileParcelController::class, 'index']);
     Route::post('/profile/parcels', [ProfileParcelController::class, 'store']);
     Route::delete('/profile/parcels/{id}', [ProfileParcelController::class, 'delete']);
@@ -42,9 +39,10 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/profile/parcels/pay-many', [ProfileParcelController::class, 'payMany']);
     Route::post('/profile/parcels/{id}/delivery', [ProfileParcelController::class, 'delivery']);
     Route::post('/profile/parcels/delivery-many', [ProfileParcelController::class, 'deliveryMany']);
+
+    Route::get('/profile/parcels', [ProfileParcelController::class, 'index']);
 });
 
-Route::get('/profile/parcels', [ProfileParcelController::class, 'index']);
 Route::post('/email/verification-notification', [VerificationController::class, 'resend'])
 	->middleware('auth:api')
     ->name('api.verification.send');
@@ -76,3 +74,9 @@ Route::get('meta-tegs/{category}/{slug}', [MetaTegController::class, 'showWithCa
 
 Route::get('/login/google', [SocialController::class, 'redirect']);
 Route::get('/login/google/callback', [SocialController::class, 'callback']);
+
+Route::post('/create-payment', [PaymentController::class, 'createPayment']);
+Route::get('/payment/success', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
+Route::get('/payment/failure', [PaymentController::class, 'paymentFailure'])->name('payment.failure');
+Route::post('/payment/notify', [PaymentController::class, 'paymentNotify'])->name('payment.notify');
+Route::post('/pay', [PaymentController::class, 'pay']);

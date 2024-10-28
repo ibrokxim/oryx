@@ -1,5 +1,6 @@
 <?php
 
+use hb\epay\HBepay;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -11,6 +12,7 @@ use App\Http\Controllers\Admin\AjaxController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\IndexController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Admin\ParcelController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\InsteadController;
@@ -149,4 +151,18 @@ Route::group(['prefix' => 'panel', 'middleware' => ['auth']], function () {
 
     Route::get('ajax/recipient', [AjaxController::class, 'recipient'])->name('ajax.recipient');
     Route::get('ajax/user', [AjaxController::class, 'user'])->name('ajax.user');
+
 });
+Route::get('payment', [PaymentController::class, 'index'])->name('payment');
+
+Route::get('/pay',function(){
+    $pay_order = new HBepay();
+    return $pay_order->gateway("test","test",
+"yF587AV9Ms94qN2QShFzVR3vFnWkhjbAK3sG",
+"67e34d63-102f-4bd1-898e-370781d0074d",
+"300022004311",10,"KZT","https://example.kz/success.html",
+"https://example.kz/failure.html","https://example.kz/",
+"https://example.kz/order/1123/fail","RU","HB payment gateway",
+"test1","","");
+});
+

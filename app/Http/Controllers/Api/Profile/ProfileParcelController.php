@@ -20,8 +20,8 @@ class ProfileParcelController extends Controller
 {
 	public function index(Request $request)
 	{
-		$items = Parcel::with(['goods', 'additionalFunctions']);
-			//->where('user_id', Auth::user()->id);
+		$items = Parcel::with(['goods'])
+			    ->where('user_id', Auth::user()->id);
 
         if ($request->has('status')) {
 			$items = $items->where('status', $request->input('status'));
@@ -49,9 +49,9 @@ class ProfileParcelController extends Controller
 			}
 		}
 
-        $items->each(function ($item) {
-            $item->additional_functions_info = $item->getAdditionalFunctionsInfo();
-        });
+//        $items->each(function ($item) {
+//            $item->additional_functions_info = $item->getAdditionalFunctionsInfo();
+//        });
         return response()->json(['items' => $items, 'cities' => $cities]);
 	}
 

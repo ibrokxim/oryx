@@ -24,9 +24,12 @@ class ProfileParcelController extends Controller
         $items = Parcel::with('goods')->where('user_id', Auth::user()->id)->where('status', $request->input('status', 0));
 
         if ($request->input('s', '')) {
-            $items = $items->where('name', 'like', "%" . $request->input('s') . "%")
-                ->orWhere('track', 'like', "%" . $request->input('s') . "%")
-                ->orWhere('id', 'like', "%" . $request->input('s') . "%");
+            $searchTerm = $request->input('s');
+            $items = $items->where(function ($query) use ($searchTerm) {
+                $query->where('name', 'like', "%" . $searchTerm . "%")
+                    ->orWhere('track', 'like', "%" . $searchTerm . "%")
+                    ->orWhere('id', 'like', "%" . $searchTerm . "%");
+            });
         }
 
         $items = $items->get();

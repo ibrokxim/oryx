@@ -62,7 +62,7 @@
                 <div class="buttons-top">
                     <div style="margin-right: 10px">
                         <div class="dropdown">
-                            <button class="btn btn-danger" style="height: 44px">изменить статус</button>
+                            <button class="btn btn-danger" style="height: 44px">Изменить статус</button>
                             <div class="dropdown-content">
                                 <button onclick="changeStatus(0)" class="btn edit-btn">добавлено</button>
                                 <button onclick="changeStatus(1)" class="btn edit-btn">На складе</button>
@@ -133,9 +133,7 @@
                         <input type="hidden" name="status" value="{{ request()->input('status',0) }}">
                     </form>
                 </div>
-
             </div>
-
 
             <div class="parcels-menu">
                 @foreach (__('ui.status') as $key=>$status)
@@ -469,27 +467,19 @@
         });
 
         function changeStatus(status) {
-            //Create an Array.
             var selected = new Array();
-
-            //Reference the Table.
             var tblFruits = document.getElementById("myTable");
             var token = $('input[name="_token"]');
-            //Reference all the CheckBoxes in Table.
             var chks = tblFruits.getElementsByTagName("INPUT");
 
-            // Loop and push the checked CheckBox value in Array.
             for (var i = 0; i < chks.length; i++) {
                 if (chks[i].checked) {
                     selected.push(chks[i].value);
                 }
             }
 
-            //Display the selected CheckBox values.
             if (selected.length > 0) {
-
                 console.log(selected.length)
-
                 fetch(`/panel/parcels/change-status/${status}`, {
                     method: 'POST',
                     headers: {
@@ -502,33 +492,19 @@
                     })
                 }).then(() => location.reload());
             }
-        };
+        }
 
+        document.addEventListener("DOMContentLoaded", function () {
+            const filterForm = document.getElementById("filter-form");
+            const resetButton = document.getElementById("reset-button");
 
-		document.addEventListener("DOMContentLoaded", function() {
-			 // const toggleButton = document.getElementById('toggle-button');
-			const filterForm = document.getElementById('filter-form');
-			const resetButton = document.getElementById('reset-button');
+            resetButton.addEventListener("click", function (event) {
+                event.preventDefault();
 
-			toggleButton.addEventListener('click', function() {
-				const currentParcel = new URLSearchParams(window.location.search).get('parcel');
-				const newParcel = currentParcel === 'all' ? '' : 'all';
-				const url = new URL(window.location.href);
-				if (newParcel === 'all') {
-					url.searchParams.set('parcel', 'all');
-				} else {
-					url.searchParams.delete('parcel');
-				}
-				window.location.href = url.toString();
-			});
+                //window.location.href = "https://cms.oryx.kz/panel/parcels";
+                window.location.href = "http://localhost:8001/panel/parcels";
+            });
+        });
 
-			resetButton.addEventListener('click', function() {
-				filterForm.reset();
-				const url = new URL(window.location.href);
-				url.search = '';
-				window.location.href = url.toString();
-			});
-
-		});
     </script>
 @endsection

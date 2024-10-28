@@ -9,9 +9,11 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "ext-pdo": "*",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^3.0",
         "guzzlehttp/guzzle": "^7.0.1",
+        "hb/epay": "dev-master",
         "laravel/framework": "^8.12",
         "laravel/passport": "^10.4",
         "laravel/socialite": "^5.15",
@@ -25,8 +27,7 @@
         "symfony/http-client": "^6.2",
         "symfony/mailgun-mailer": "^6.2",
         "tymon/jwt-auth": "^1.0@dev",
-        "venturecraft/revisionable": "1.*",
-        "ext-pdo": "*"
+        "venturecraft/revisionable": "1.*"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

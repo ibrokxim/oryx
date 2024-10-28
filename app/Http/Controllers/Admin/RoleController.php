@@ -11,7 +11,6 @@ class RoleController extends Controller
 {
     public function index(Request $request)
     {
-//        $this->authorize('viewAny', Role::class);
     	if($request->method() == 'POST'){
     		$items = $request->all();
     		if(isset($items['id'])){

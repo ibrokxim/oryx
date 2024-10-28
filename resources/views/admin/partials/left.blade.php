@@ -14,7 +14,6 @@
                 </a>
             </li>
 {{--            @endcan--}}
-
             @can('finance')
 	        <li class="hide {{ request()->is('*finance*') ? 'active' : '' }}">
 	            <a href="{{route('finance.index')}}">
