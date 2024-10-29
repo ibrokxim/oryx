@@ -22,6 +22,12 @@ class ProfileController extends Controller
         return response()->json(['message' => 'Profile index'], 200);
     }
 
+    public function userBalance()
+    {
+        $balance = Auth::user()->balance;
+        return response()->json(['balance' => $balance], 200);
+    }
+
     public function settings(Request $request)
     {
         $user = Auth::user();
