@@ -39,7 +39,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/profile/parcels/pay-many', [ProfileParcelController::class, 'payMany']);
     Route::post('/profile/parcels/{id}/delivery', [ProfileParcelController::class, 'delivery']);
     Route::post('/profile/parcels/delivery-many', [ProfileParcelController::class, 'deliveryMany']);
-
+    Route::get('/profile/balance', [ProfileController::class, 'userBalance']);
     Route::get('/profile/parcels', [ProfileParcelController::class, 'index']);
 });
 
@@ -80,3 +80,5 @@ Route::get('/payment/success', [PaymentController::class, 'paymentSuccess'])->na
 Route::get('/payment/failure', [PaymentController::class, 'paymentFailure'])->name('payment.failure');
 Route::post('/payment/notify', [PaymentController::class, 'paymentNotify'])->name('payment.notify');
 Route::post('/pay', [PaymentController::class, 'pay']);
+
+

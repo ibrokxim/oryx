@@ -48,7 +48,6 @@ Route::post('/review', [PageController::class, 'review']);
 Route::post('/email', [PageController::class, 'email']);
 Route::post('/buy', [PageController::class, 'send']);
 
-/////////////////////////////////////////////////////////////////////////
 
 Route::get('email/notif', [App\Http\Controllers\IndexController::class, 'notif'])->name('verification.notif');
 
