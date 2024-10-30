@@ -173,4 +173,14 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail, JWTSubj
     {
         return $this->hasMany(DeliveryMode::class);
     }
+
+    public function deductBalance($amount)
+    {
+        if ($this->balance >= $amount) {
+            $this->balance -= $amount;
+            $this->save();
+            return true;
+        }
+        return false;
+    }
 }
