@@ -25,7 +25,7 @@ class PaymentController extends Controller
         $response = $pay_order->gateway
         (
             "test",
-            "test",
+            "Oryx",
             "yF587AV9Ms94qN2QShFzVR3vFnWkhjbAK3sG",
             "67e34d63-102f-4bd1-898e-370781d0074d",
             $invoiceId,

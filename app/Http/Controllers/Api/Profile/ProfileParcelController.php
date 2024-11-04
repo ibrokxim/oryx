@@ -49,9 +49,6 @@ class ProfileParcelController extends Controller
 			}
 		}
 
-//        $items->each(function ($item) {
-//            $item->additional_functions_info = $item->getAdditionalFunctionsInfo();
-//        });
         return response()->json(['items' => $items, 'cities' => $cities]);
 	}
 

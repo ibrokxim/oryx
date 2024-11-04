@@ -17,7 +17,7 @@ class TransactionController extends Controller
     {
         $currency = Setting::where('code', 'currency')->first()->value;
         $item = Parcel::where([['user_id', Auth::user()->id], ['id', $id]])->first();
-
+        //dd($item);
         if (!$item) {
             return response()->json(['error' => 'Order not found'], 404);
         }

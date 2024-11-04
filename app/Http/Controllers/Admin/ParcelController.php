@@ -94,8 +94,7 @@ class ParcelController extends Controller
 
     public function store(Request $request)
     {
-        if ($request['prod_price'] === null)
-        {
+        if ($request['prod_price'] === null) {
             $request['prod_price'] = 0;
         }
         abort_if(Gate::denies('parcels'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -106,15 +105,14 @@ class ParcelController extends Controller
             'goods.price.*' => 'required',
             'additional_functions' => 'nullable',
             'additional_functions.*' => 'exists:additional_functions,id',
+            'city_out' => 'required|in:1,2', // Добавьте валидацию для поля city_out
         ]);
-
 
         $item = Parcel::create(array_merge($request->all(), ['name' => $request->track]));
         $input_goods = $request->input('goods');
         $goods = [];
 
-        for ($i = 0; $i < count($input_goods['name']); $i++)
-        {
+        for ($i = 0; $i < count($input_goods['name']); $i++) {
             $goods[] = new ParcelGood([
                 'parcel_id' => $item->id,
                 'name' => $input_goods['name'][$i],
@@ -125,8 +123,7 @@ class ParcelController extends Controller
 
         $item->goods()->saveMany($goods);
 
-        if ($request->has('additional_functions'))
-        {
+        if ($request->has('additional_functions')) {
             $item->additionalFunctions()->sync($request->input('additional_functions'));
         }
 
@@ -153,28 +150,31 @@ class ParcelController extends Controller
             'recipient_id' => 'required|exists:recipients,id',
             'additional_functions' => 'nullable',
             'additional_functions.*' => 'exists:additional_functions,id',
+            'city_out' => 'required|in:1,2', // Добавьте валидацию для поля city_out
         ]);
 
         $item = Parcel::findOrFail($id);
         $prod_price = $item->prod_price;
         $fill = $request->all();
         $fill['prod_price'] = str_replace(',', '.', $fill['prod_price']);
-        if ($request->status == 10 && !$item->payed)
+
+        if ($request->status == 10 && !$item->payed) {
             unset($fill['status']);
+        }
 
         $item->update($fill);
         $item->update(['user_id' => $item->recipient->user_id]);
+
         // Обновление дополнительных услуг
-        if ($request->has('additional_functions'))
-        {
+        if ($request->has('additional_functions')) {
             $item->additionalFunctions()->sync($request->input('additional_functions'));
-        } else
-        {
+        } else {
             $item->additionalFunctions()->detach();
         }
 
-        if ($fill['prod_price'] == $prod_price)
+        if ($fill['prod_price'] == $prod_price) {
             return redirect()->route('parcels.index');
+        }
     }
 
     public function delete(Request $request)

@@ -159,7 +159,7 @@ Route::get('/pay',function(){
     return $pay_order->gateway("test","test",
 "yF587AV9Ms94qN2QShFzVR3vFnWkhjbAK3sG",
 "67e34d63-102f-4bd1-898e-370781d0074d",
-"300022004311",10,"KZT","https://example.kz/success.html",
+"3000224311",10,"KZT","https://example.kz/success.html",
 "https://example.kz/failure.html","https://example.kz/",
 "https://example.kz/order/1123/fail","RU","HB payment gateway",
 "test1","","");

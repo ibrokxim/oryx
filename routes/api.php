@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\TransactionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MetaTegController;
 use App\Http\Controllers\Api\MailController;
@@ -8,6 +7,7 @@ use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Auth\SocialController;
+use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Profile\ProfileController;
 use App\Http\Controllers\Api\Auth\VerificationController;
@@ -41,7 +41,11 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/profile/parcels/{id}/delivery', [ProfileParcelController::class, 'delivery']);
     Route::post('/profile/parcels/delivery-many', [ProfileParcelController::class, 'deliveryMany']);
     Route::get('/profile/parcels', [ProfileParcelController::class, 'index']);
+
+    Route::post('/parcels/{id}/pay', [TransactionController::class, 'pay']);
+    Route::post('/parcels/pay-many', [TransactionController::class, 'payMany']);
 });
+
 Route::get('/profile/balance', [ProfileController::class, 'userBalance']);
 
 Route::post('/email/verification-notification', [VerificationController::class, 'resend'])
@@ -76,13 +80,11 @@ Route::get('meta-tegs/{category}/{slug}', [MetaTegController::class, 'showWithCa
 Route::get('/login/google', [SocialController::class, 'redirect']);
 Route::get('/login/google/callback', [SocialController::class, 'callback']);
 
-Route::post('/parcels/{id}/pay', [TransactionController::class, 'pay']);
-Route::post('/parcels/pay-many', [TransactionController::class, 'payMany']);
 
-Route::post('/create-payment', [PaymentController::class, 'pay']);
-Route::get('/payment/success', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
-Route::get('/payment/failure', [PaymentController::class, 'paymentFailure'])->name('payment.failure');
-Route::post('/payment/notify', [PaymentController::class, 'paymentNotify'])->name('payment.notify');
-Route::post('/pay', [PaymentController::class, 'pay']);
+//Route::post('/create-payment', [PaymentController::class, 'pay']);
+//Route::get('/payment/success', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
+//Route::get('/payment/failure', [PaymentController::class, 'paymentFailure'])->name('payment.failure');
+//Route::post('/payment/notify', [PaymentController::class, 'paymentNotify'])->name('payment.notify');
+//Route::post('/pay', [PaymentController::class, 'pay']);
 
 

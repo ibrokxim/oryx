@@ -54,13 +54,17 @@
         	            <p class="in-name">Страна отправки</p>
         	            {{ Form::select('country_out', App\Models\Setting::where([['type',3],['active',1]])->pluck('name','id'), $item->country_out,['class'=>'head-input']) }}
         	        </div>
-        	        <div class="new-flex w-one">
-        	            <p class="in-name">Получатель</p>
-        	            <input type="hidden" name="user_id" id="user_id" value="{{ old('user_id', $item->user_id) }}" />
-        	            <input type="hidden" name="recipient_id" id="recipient_id" value="{{ old('recipient_id', $item->recipient_id) }}" />
-        	            <input type="text" id="recipient" value="@if ($item->id){{ $item->recipient->surname ?? '' }} {{ $item->recipient->name ?? '' }} {{ $item->recipient->fname ?? '' }} ({{ $item->user->tariffObj ? $item->user->tariffObj->name : 'По-умолчанию'}}) UID{{ $item->user_id }}@endif" class="head-input" />
-        	            {{-- {{ Form::select('recipient_id', $users, $item->recipient_id) }} --}}
-        	        </div>
+                        <div class="new-flex w-one">
+                            <p class="in-name">Получатель</p>
+                            <input type="hidden" name="recipient_id" id="recipient_id" value="{{ old('recipient_id', $item->recipient_id) }}" />
+                            <select id="recipient_select" class="head-input">
+                                <option value="">Выберите получателя</option>
+                                @foreach($users as $id => $name)
+                                    <option value="{{ $id }}">{{ $name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+{{--        	             {{ Form::select('recipient_id', $users, $item->recipient_id) }}--}}
         	        <div class="new-flex w-two">
         	            <p class="in-name">Трек</p>
         	            <input type="text" name="track" value="{{ request()->input('t',old('track', $item->track)) }}" class="head-input" />
@@ -95,6 +99,14 @@
         	            <p class="in-name">Статус</p>
         	            {{ Form::select('status', __('ui.status'), $item->status) }}
         	        </div>
+                    <div class="new-flex w-two">
+                            <p class="in-name">Город отправки</p>
+                            <select name="city_out" class="head-input" required>
+                                <option value="">Выберите город отправки</option>
+                                <option value="1" {{ old('city_out', $item->city_out) == 1 ? 'selected' : '' }}>Нью-Йорк</option>
+                                <option value="2" {{ old('city_out', $item->city_out) == 2 ? 'selected' : '' }}>Делавер</option>
+                            </select>
+                    </div>
                     <div class="new-flex w-two">
         	            <p class="in-name">Дополнительные услуги</p>
                         <select name="additional_functions" id="functions">
@@ -150,6 +162,24 @@
         	</div>
 	    </form>
 	</div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('recipient_select').addEventListener('change', function() {
+                document.getElementById('recipient_id').value = this.value;
+            });
+
+            document.querySelector('form').addEventListener('submit', function(e) {
+                if (!document.getElementById('recipient_id').value) {
+                    alert('Поле "Получатель" обязательно для заполнения');
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        });
+    </script>
+
 
 	<script>
 		$(function(){
