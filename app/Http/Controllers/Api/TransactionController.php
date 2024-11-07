@@ -17,7 +17,7 @@ class TransactionController extends Controller
     {
         $currency = Setting::where('code', 'currency')->first()->value;
         $item = Parcel::where([['user_id', Auth::user()->id], ['id', $id]])->first();
-        //dd($item);
+
         if (!$item) {
             return response()->json(['error' => 'Order not found'], 404);
         }
@@ -34,6 +34,11 @@ class TransactionController extends Controller
 
         try {
             $user = Auth::user();
+
+            if ($user->balance < $item->prod_price) {
+                DB::rollBack();
+                return response()->json(['error' => 'Insufficient balance'], 400);
+            }
 
             if ($user->deductBalance($item->prod_price)) {
                 $tr = Transaction::create([
@@ -87,8 +92,8 @@ class TransactionController extends Controller
                     'user_id' => $user->id,
                     'count' => $prod_price,
                     'tenge' => round($prod_price * $currency, 2),
-                    'type' => 1, // Предположим, что это тип транзакции для оплаты
-                    'outgo' => 1, // Предположим, что это означает расход
+                    'type' => 1,
+                    'outgo' => 1,
                 ]);
 
                 $tr->parcels()->sync($ids);
