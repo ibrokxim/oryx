@@ -501,8 +501,8 @@
             resetButton.addEventListener("click", function (event) {
                 event.preventDefault();
 
-                //window.location.href = "https://cms.oryx.kz/panel/parcels";
-                window.location.href = "http://localhost:8001/panel/parcels";
+                window.location.href = "https://cms.oryx.kz/panel/parcels";
+                //window.location.href = "http://localhost:8001/panel/parcels";
             });
         });
 

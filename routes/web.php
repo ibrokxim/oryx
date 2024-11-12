@@ -150,18 +150,8 @@ Route::group(['prefix' => 'panel', 'middleware' => ['auth']], function () {
 
     Route::get('ajax/recipient', [AjaxController::class, 'recipient'])->name('ajax.recipient');
     Route::get('ajax/user', [AjaxController::class, 'user'])->name('ajax.user');
-
+    Route::get('/pay', [PaymentController::class, 'pay']);
 });
-Route::get('payment', [PaymentController::class, 'index'])->name('payment');
 
-Route::get('/pay',function(){
-    $pay_order = new HBepay();
-    return $pay_order->gateway("test","test",
-"yF587AV9Ms94qN2QShFzVR3vFnWkhjbAK3sG",
-"67e34d63-102f-4bd1-898e-370781d0074d",
-"3000224311",10,"KZT","https://example.kz/success.html",
-"https://example.kz/failure.html","https://example.kz/",
-"https://example.kz/order/1123/fail","RU","HB payment gateway",
-"test1","","");
-});
+
 

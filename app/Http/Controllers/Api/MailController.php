@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Support\Arr;
 use App\Mail\ContactShipped;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
@@ -33,7 +33,7 @@ class MailController extends Controller
         $message = Arr::get($request, 'message', 'no message');
         $phone = Arr::get($request, 'phone', 'no phone');
         $country = 'KZ';
-        
+
         Mail::to('oryx.usa.kz@gmail.com')->send(new ContactShipped($validated, $message, $phone, $country));
 
         return response()->json(['status' => 'success', 'message' => 'Email sent successfully']);

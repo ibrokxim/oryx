@@ -2,20 +2,18 @@
 
 namespace App\Http\Controllers\Profile;
 
-use App\Http\Controllers\Controller;
-use App\Models\Address;
-use GuzzleHttp\Client;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\Parcel;
-use App\Models\ParcelGood;
-use App\Models\Setting;
-use App\Models\Transaction;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
-use App\Models\User;
-use App\Models\Recipient;
+use App\Models\Parcel;
+use GuzzleHttp\Client;
+use App\Models\Setting;
+use App\Models\Address;
+use App\Models\ParcelGood;
+use App\Models\Transaction;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
 
 class ProfileParcelController extends Controller
 {
@@ -183,7 +181,7 @@ class ProfileParcelController extends Controller
             'description' => 'Пополнение баланса на сайте ' . env('APP_NAME'),
         ];
 
-        $res = \App\Http\Controllers\Profile\ProfileController::sendSber('register.do', $vars);
+        $res = \App\Http\Controllers\Api\Profile\ProfileController::sendSber('register.do', $vars);
 
         if (empty($res['orderId'])) {
             Log::debug(print_r(array_merge($vars, $res), 1));
@@ -248,7 +246,7 @@ class ProfileParcelController extends Controller
             'description' => 'Пополнение баланса на сайте ' . env('APP_NAME'),
         ];
 
-        $res = \App\Http\Controllers\Profile\ProfileController::sendSber('register.do', $vars);
+        $res = \App\Http\Controllers\Api\Profile\ProfileController::sendSber('register.do', $vars);
 
         if (empty($res['orderId'])) {
             Log::debug(print_r(array_merge($vars, $res), 1));

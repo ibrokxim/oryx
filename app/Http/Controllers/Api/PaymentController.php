@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+
 class PaymentController extends Controller
 {
     public function pay(Request $request)
@@ -14,7 +15,6 @@ class PaymentController extends Controller
         $request->validate([
             'user_id' => 'required|exists:users,id', // Проверяем, что пользователь существует
             'amount' => 'required|numeric|min:1', // Проверяем, что сумма больше 0
-
         ]);
 
         $user = User::find($request->user_id);
@@ -22,7 +22,9 @@ class PaymentController extends Controller
         $invoiceId = uniqid('inv_');
 
         $pay_order = new HBepay();
-        $response = $pay_order->gateway(
+
+        // Получаем URL для перенаправления на платежную систему
+        $paymentUrl = $pay_order->gateway(
             "test",
             "test",
             "yF587AV9Ms94qN2QShFzVR3vFnWkhjbAK3sG",
@@ -41,20 +43,11 @@ class PaymentController extends Controller
             ""
         );
 
-        if ($response['status'] == 'success') {
-            $user->balance += $request->amount;
-            $user->save();
-
-            return response()->json([
-                'message' => 'Payment successful',
-                'invoice_id' => $invoiceId,
-                'new_balance' => $user->balance,
-            ]);
-        } else {
-            return response()->json([
-                'message' => 'Payment failed',
-                'error' => $response['error'] ?? 'Unknown error',
-            ], 400);
-        }
+        // Возвращаем URL для перенаправления на платежную систему
+        return response()->json([
+            'message' => 'Redirect to payment',
+            'payment_url' => $paymentUrl,
+            'invoice_id' => $invoiceId,
+        ]);
     }
 }

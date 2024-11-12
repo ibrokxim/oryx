@@ -1,8 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\PaymentController;
-use hb\epay\HBepay;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MetaTegController;
 use App\Http\Controllers\Api\MailController;
@@ -47,7 +44,6 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/parcels/{id}/pay', [TransactionController::class, 'pay']);
     Route::post('/parcels/pay-many', [TransactionController::class, 'payMany']);
     Route::get('/profile/balance', [ProfileController::class, 'userBalance']);
-    Route::post('/pay', [PaymentController::class, 'pay']);
 });
 
 Route::post('/email/verification-notification', [VerificationController::class, 'resend'])

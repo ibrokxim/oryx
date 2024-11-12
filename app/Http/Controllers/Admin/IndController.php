@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use Gate;
-use App\Models\Excel;
 use App\Models\Parcel;
 use App\Models\Recipient;
 use App\Models\ParcelGood;

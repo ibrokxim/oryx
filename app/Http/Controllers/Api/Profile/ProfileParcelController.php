@@ -152,7 +152,7 @@ class ProfileParcelController extends Controller
             'description' => 'Пополнение баланса на сайте ' . env('APP_NAME'),
         ];
 
-        $res = \App\Http\Controllers\Profile\ProfileController::sendSber('register.do', $vars);
+        $res = \App\Http\Controllers\Api\Profile\ProfileController::sendSber('register.do', $vars);
 
         if (empty($res['orderId'])) {
             Log::debug(print_r(array_merge($vars, $res), 1));
@@ -200,7 +200,7 @@ class ProfileParcelController extends Controller
             'description' => 'Пополнение баланса на сайте ' . env('APP_NAME'),
         ];
 
-        $res = \App\Http\Controllers\Api\Profile\ProfileController::sendSber('register.do', $vars);
+        $res = \App\Http\Controllers\Api\Api\Profile\ProfileController::sendSber('register.do', $vars);
         if (empty($res['orderId'])) {
             return response()->json(['status' => 'error', 'message' => 'Order error']);
         }

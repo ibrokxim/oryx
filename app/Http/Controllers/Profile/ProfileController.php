@@ -11,10 +11,8 @@ use App\Models\Transaction;
 use App\Models\Notification;
 use App\Models\Instead;
 use App\Models\Setting;
-use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
