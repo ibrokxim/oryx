@@ -16,17 +16,17 @@ class TransactionController extends Controller
     public function pay(Request $request, $id)
     {
         $currency = Setting::where('code', 'currency')->first()->value;
-        $item = Parcel::where([['user_id', Auth::user()->id], ['id', $id]])->first();
+        $parcel = Parcel::where([['user_id', Auth::user()->id], ['id', $id]])->first();
 
-        if (!$item) {
+        if (!$parcel) {
             return response()->json(['error' => 'Order not found'], 404);
         }
 
-        if ($item->payed) {
+        if ($parcel->payed = 1) {
             return response()->json(['error' => 'Order already paid'], 400);
         }
 
-        if (Transaction::where('parcel_id', $item->id)->where('type', 1)->first()) {
+        if (Transaction::where('parcel_id', $parcel->id)->where('type', 1)->first()) {
             return response()->json(['error' => 'Order already paid'], 400);
         }
 
@@ -34,24 +34,23 @@ class TransactionController extends Controller
 
         try {
             $user = Auth::user();
-
-            if ($user->balance < $item->prod_price) {
+            if ($user->balance = 0  || $user->balance < $parcel->prod_price) {
                 DB::rollBack();
-                return response()->json(['error' => 'Insufficient balance'], 400);
+                return response()->json(['error' => 'У вас недостаточно средств'], 400);
             }
 
-            if ($user->deductBalance($item->prod_price)) {
-                $tr = Transaction::create([
+            if ($user->deductBalance($parcel->prod_price)) {
+                $transaction = Transaction::create([
                     'user_id' => $user->id,
-                    'parcel_id' => $item->id,
-                    'count' => $item->prod_price,
-                    'tenge' => round($item->prod_price * $currency, 2),
-                    'type' => 1, // Предположим, что это тип транзакции для оплаты
-                    'outgo' => 1, // Предположим, что это означает расход
+                    'parcel_id' => $parcel->id,
+                    'count' => $parcel->prod_price,
+                    'tenge' => round($parcel->prod_price * $currency, 2),
+                    'type' => 1,
+                    'outgo' => 1,
                 ]);
 
-                $item->payed = 1;
-                $item->save();
+                $parcel->payed = 1;
+                $parcel->save();
 
                 DB::commit();
                 return response()->json(['message' => 'Payment successful']);

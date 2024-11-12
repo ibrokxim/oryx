@@ -1,5 +1,7 @@
 <?php
 
+use hb\epay\HBepay;
+use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MetaTegController;
 use App\Http\Controllers\Api\MailController;
@@ -22,7 +24,7 @@ Route::middleware('auth:api')->group(function () {
     Route::match(['get', 'post'], '/profile/settings', [ProfileController::class, 'settings']);
     Route::post('profile/nsettings', [ProfileController::class, 'nsettings']);
     Route::post('profile/recipients', [ProfileController::class, 'recipients_add']);
-    Route::post('profile/balance', [ProfileController::class, 'balance']);
+    //Route::post('profile/balance', [ProfileController::class, 'balance']);
     Route::post('profile/callback', [ProfileController::class, 'callback']);
     Route::post('profile/success', [ProfileController::class, 'success']);
     Route::post('profile/error', [ProfileController::class, 'error']);
@@ -44,6 +46,30 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/parcels/{id}/pay', [TransactionController::class, 'pay']);
     Route::post('/parcels/pay-many', [TransactionController::class, 'payMany']);
     Route::get('/profile/balance', [ProfileController::class, 'userBalance']);
+
+    Route::post('/pay', function(Request $request) {
+        $invoiceId = uniqid('inv_', true); // Генерация уникального инвойс ID
+        $pay_order = new HBepay();
+
+        return $pay_order->gateway(
+            "test",
+            "test",
+            "yF587AV9Ms94qN2QShFzVR3vFnWkhjbAK3sG",
+            "67e34d63-102f-4bd1-898e-370781d0074d",
+            $invoiceId,
+            10,
+            "KZT",
+            "https://example.kz/success.html",
+            "https://example.kz/failure.html",
+            "https://example.kz/",
+            "https://example.kz/order/1123/fail",
+            "RU",
+            "HB payment gateway",
+            "test1",
+            "",
+            ""
+        );
+    });
 });
 
 

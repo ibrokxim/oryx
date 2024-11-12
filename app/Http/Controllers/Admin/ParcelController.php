@@ -67,6 +67,7 @@ class ParcelController extends Controller
         $items = $items->where('status', $request->input('status', 0))->orderBy('id', 'desc')->paginate(50);
         $count_ = $count_->select(DB::raw('count(*) as c,status'))->groupBy('status')->get();
         $count = [];
+
         foreach ($count_ as $p)
         {
             $count[$p->status] = $p->c;
