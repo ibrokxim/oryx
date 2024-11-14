@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-
 class PaymentController extends Controller
 {
     public function pay(Request $request)
@@ -23,7 +22,6 @@ class PaymentController extends Controller
 
         $pay_order = new HBepay();
 
-        // Получаем URL для перенаправления на платежную систему
         $paymentUrl = $pay_order->gateway(
             "test",
             "test",
@@ -43,7 +41,6 @@ class PaymentController extends Controller
             ""
         );
 
-        // Возвращаем URL для перенаправления на платежную систему
         return response()->json([
             'message' => 'Redirect to payment',
             'payment_url' => $paymentUrl,

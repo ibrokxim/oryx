@@ -16,8 +16,6 @@ class IndexController extends Controller
         $reviews = Review::where('status', 'active')->get();
         $questions = Question::where('status', 'active')->get();
         $products = Product::where('status', 'active')->inRandomOrder()->take(8)->get();
-
-        //dd($reviews);
         return view('home', ['reviews' => $reviews, 'questions' => $questions, 'products' => $products]);
     }
 
@@ -29,7 +27,6 @@ class IndexController extends Controller
     public function confirm(Request $request)
     {
     	if($request->method() === 'POST'){
-
     		$item = Auth::user();
             $fill = $request->only(['name', 'fname', 'surname', 'email', 'phone']);
             if(isset($fill['phone']))
@@ -90,7 +87,6 @@ class IndexController extends Controller
             Log::info("checkContactBitrix result is more than 0");
             Log::info(["checkContactBitrixResult" => $result]);
         }
-
         return true;
     }
 
