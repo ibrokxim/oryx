@@ -19,11 +19,6 @@ class Transaction extends Model
         'parcel_id',
     ];
 
-//    public function user()
-//    {
-//        return $this->hasOne('App\Models\User', 'id', 'user_id');
-//    }
-
     public function user()
     {
         return $this->belongsTo(User::class);

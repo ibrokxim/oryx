@@ -12,7 +12,6 @@ use App\Http\Controllers\Admin\AjaxController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\IndexController;
-use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Admin\ParcelController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\InsteadController;
@@ -21,7 +20,6 @@ use App\Http\Controllers\Admin\RecipientController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Profile\ProfileParcelController;
 use App\Http\Controllers\Admin\AdditionalFunctionsController;
-
 
 Route::get('profile/dev-auth/{user}', function (User $user) {
     Auth::login($user);
@@ -119,7 +117,7 @@ Route::group(['prefix' => 'panel', 'middleware' => ['auth']], function () {
 
     Route::post('recipients/error/{id}', [RecipientController::class, 'error'])->name('recipients.error');
     Route::resource('recipients', RecipientController::class);
-    //файлы поучателя
+    //файлы получателя
     Route::get('/recipient/file/{id}/{file}', [RecipientController::class, 'file']);
     Route::post('recipients/delete', [RecipientController::class, 'delete'])->name('recipients.delete');
 
@@ -150,8 +148,15 @@ Route::group(['prefix' => 'panel', 'middleware' => ['auth']], function () {
 
     Route::get('ajax/recipient', [AjaxController::class, 'recipient'])->name('ajax.recipient');
     Route::get('ajax/user', [AjaxController::class, 'user'])->name('ajax.user');
-    Route::get('/pay', [PaymentController::class, 'pay']);
 });
-
-
-
+//Route::get('/pay', [PaymentController::class, 'pay']);
+Route::get('/pay',function(){
+    $pay_order=new HBepay();
+return $pay_order->gateway("test","test",
+"yF587AV9Ms94qN2QShFzVR3vFnWkhjbAK3sG",
+"67e34d63-102f-4bd1-898e-370781d0074d",
+"300022002",10,"KZT","https://example.kz/success.html",
+"https://example.kz/failure.html","https://example.kz/",
+"https://example.kz/order/1123/fail","RU", "HB payment gateway",
+"test1","","");
+});

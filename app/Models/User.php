@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Permission\Models\Role;
 
@@ -176,11 +177,35 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail, JWTSubj
 
     public function deductBalance($amount)
     {
-        if ($this->balance >= $amount) {
+        try {
+            // Проверяем, достаточно ли средств
+            if ($this->balance < $amount) {
+                Log::warning('Insufficient balance in deductBalance', [
+                    'user_id' => $this->id,
+                    'current_balance' => $this->balance,
+                    'deduct_amount' => $amount
+                ]);
+                return false;
+            }
+
+            // Списываем баланс
             $this->balance -= $amount;
-            $this->save();
-            return true;
+            $result = $this->save();
+
+            Log::info('Balance deducted', [
+                'user_id' => $this->id,
+                'deduct_amount' => $amount,
+                'new_balance' => $this->balance,
+                'save_result' => $result
+            ]);
+
+            return $result;
+        } catch (\Exception $e) {
+            Log::error('Error in deductBalance', [
+                'user_id' => $this->id,
+                'error_message' => $e->getMessage()
+            ]);
+            return false;
         }
-        return false;
     }
 }

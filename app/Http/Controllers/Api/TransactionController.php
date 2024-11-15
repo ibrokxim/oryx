@@ -22,11 +22,11 @@ class TransactionController extends Controller
             return response()->json(['error' => 'Order not found'], 404);
         }
 
-        if ($parcel->payed = 1) {
+        if ($parcel->payed == 1) {
             return response()->json(['error' => 'Order already paid'], 400);
         }
 
-        if (Transaction::where('parcel_id', $parcel->id)->where('type', 1)->first()) {
+        if (Transaction::where('parcel_id', $parcel->id)->where('payed', 1)->first()) {
             return response()->json(['error' => 'Order already paid'], 400);
         }
 
@@ -34,7 +34,7 @@ class TransactionController extends Controller
 
         try {
             $user = Auth::user();
-            if ($user->balance = 0  || $user->balance < $parcel->prod_price) {
+            if ($user->balance == 0 || $user->balance < $parcel->prod_price) {
                 DB::rollBack();
                 return response()->json(['error' => 'У вас недостаточно средств'], 400);
             }
@@ -54,14 +54,20 @@ class TransactionController extends Controller
 
                 DB::commit();
                 return response()->json(['message' => 'Payment successful']);
-            } else {
-                DB::rollBack();
-                return response()->json(['error' => 'Insufficient balance'], 400);
             }
-        } catch (\Exception $e) {
+        }   catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Payment failed: ' . $e->getMessage());
-            return response()->json(['error' => 'Payment failed'], 500);
+
+            Log::error('Payment failed', [
+                'error_message' => $e->getMessage(),
+                'error_trace' => $e->getTraceAsString(),
+                'user_id' => Auth::user()->id ?? 'Not authenticated'
+            ]);
+
+            return response()->json([
+                'error' => 'Payment failed',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 

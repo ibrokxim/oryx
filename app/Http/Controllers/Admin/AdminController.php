@@ -73,7 +73,6 @@ class AdminController extends Controller
 
     public function edit(User $item)
     {
-
         $id = Auth::id();
         abort_if(!Gate::denies('users'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $item = User::findOrFail($id);
