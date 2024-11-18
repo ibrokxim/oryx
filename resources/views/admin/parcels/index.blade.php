@@ -242,34 +242,7 @@
 											c10.25,5.844,18.406,13.938,24.531,24.219c6.094,10.313,9.155,22.345,9.155,36.126C344.719,323.125,338.406,340.75,325.812,354.844
 											z"/>
 									</g>
-									<g>
-									</g>
-									<g>
-									</g>
-									<g>
-									</g>
-									<g>
-									</g>
-									<g>
-									</g>
-									<g>
-									</g>
-									<g>
-									</g>
-									<g>
-									</g>
-									<g>
-									</g>
-									<g>
-									</g>
-									<g>
-									</g>
-									<g>
-									</g>
-									<g>
-									</g>
-									<g>
-									</g>
+
 									</svg>
 								@else
 									<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -322,22 +295,11 @@
                             <td class="hide">{{$item->pid}}</td>
                             <td class="nowrap">{{$item->created_at->format('d.m.Y')}}</td>
                             <td style="max-width: 200px;">
-                                @if ($item->status==4 && request('out')!=15)
+                                @if ($item->status == 4 || $item->status == 2 || $item->status == 6 || $item->status == 3 || $item->status == 5 || $item->status == 0 || $item->status == 1)
                                     <p class="parcels-content">{{ $item->recipient->surname ?? ''  }} {{ $item->recipient->name ?? ''  }} {{ $item->recipient->fname ?? ''  }}</p>
                                 @endif
-                                @if ($item->status==3 && request('out')!=15)
-                                    <p class="parcels-content">{{ $item->recipient->surname ?? ''  }} {{ $item->recipient->name ?? ''  }} {{ $item->recipient->fname ?? ''  }}</p>
-                                @endif
-                                @if ($item->status==5 && request('out')!=15)
-                                    <p class="parcels-content">{{ $item->recipient->surname ?? ''  }} {{ $item->recipient->name ?? ''  }} {{ $item->recipient->fname ?? ''  }}</p>
-                                @endif
-                                @if ($item->status==0 && request('out')!=15)
-                                    <p class="parcels-content">{{ $item->recipient->surname ?? ''  }} {{ $item->recipient->name ?? ''  }} {{ $item->recipient->fname ?? ''  }}</p>
-                                @endif
-                                 @if ($item->status==1 && request('out')!=15)
-                                    <p class="parcels-content">{{ $item->recipient->surname ?? ''  }} {{ $item->recipient->name ?? ''  }} {{ $item->recipient->fname ?? ''  }}</p>
-                                @endif
-                                @if ($item->status>=4 || request('out')==15)
+
+                                @if ($item->status >= 4 || request('out')==15)
                                     <div>
                                         @foreach (['in_fio','in_city','in_address','in_comment','in_phone'] as $element)
                                             @if ($item->{$element})
@@ -347,11 +309,11 @@
                                     </div>
                                 @endif
                             </td>
-                            @if ($item->status==4)
+                            @if ($item->status == 4 )
                                 <td>{{$item->country ?? '' }}</td>
                             @endif
                             <td>
-                                @if ($item->status>=4 || request('out')==15)
+                                @if ($item->status >= 4 || request('out')==15)
                                     {{$item->in_city }}
                                 @else
                                     {{$item->city ?? '' }}

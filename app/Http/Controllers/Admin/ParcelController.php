@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Component\HttpFoundation\Response;
 
-
 class ParcelController extends Controller
 {
 	public function index(Request $request)
@@ -106,7 +105,7 @@ class ParcelController extends Controller
             'goods.price.*' => 'required',
             'additional_functions' => 'nullable',
             'additional_functions.*' => 'exists:additional_functions,id',
-            'city_out' => 'required|in:1,2', // Добавьте валидацию для поля city_out
+            'city_out' => 'required|in:1,2',
         ]);
 
         $item = Parcel::create(array_merge($request->all(), ['name' => $request->track]));
@@ -127,7 +126,6 @@ class ParcelController extends Controller
         if ($request->has('additional_functions')) {
             $item->additionalFunctions()->sync($request->input('additional_functions'));
         }
-
         return redirect()->route('parcels.index');
     }
 
