@@ -184,22 +184,4 @@ class IndController extends Controller
         $writer->save('php://output');
     }
 
-    public function transactions(Request $request)
-    {
-        abort_if(Gate::denies('transactions'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
-        $items = Transaction::when(request('ds'), function($q){
-            $q->where('created_at', '>=', request('ds'));
-        })->when(request('de'), function($q){
-            $q->whereHas('transaction', function($q){
-                $q->where('created_at', '<=', request('de').' 23:59');
-            });
-        })->when(request('s'), function($q){
-            $q->where(function($q){
-                $q->where('user_id', request('s'))->orWhere('id', request('s'))->orWhere('order', 'like', '%'.request('s').'%');
-            });
-        })->where('outgo', 0)->where('type', 1)->orderBy('id','desc')->paginate(20);
-
-        return view('admin.ind.transactions', compact('items'));
-    }
 }

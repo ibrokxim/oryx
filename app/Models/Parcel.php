@@ -25,7 +25,6 @@ class Parcel extends Model
         'pid',
         'weight',
         'date_out',
-
         'payed',
         'in_fio',
         'in_city',

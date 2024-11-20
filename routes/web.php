@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\TransactionController;
 use hb\epay\HBepay;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -140,7 +141,7 @@ Route::group(['prefix' => 'panel', 'middleware' => ['auth']], function () {
 	Route::post('parcels/change-status/{status}', [ParcelController::class, 'changeStatus'])->name('parcels.change-status');
 
     Route::get('finance', [IndController::class, 'finance'])->name('finance.index');
-    Route::get('transactions', [IndController::class, 'transactions'])->name('transactions.index');
+    Route::get('transactions', [TransactionController::class, 'transactions'])->name('transactions.index');
     Route::get('ind/load', [IndController::class, 'load'])->name('ind.load');
     Route::resource('ind', IndController::class);
 
