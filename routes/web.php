@@ -155,11 +155,12 @@ Route::group(['prefix' => 'panel', 'middleware' => ['auth']], function () {
 Route::get('/pay',function(Request $request){
     $pay_order = new HBepay();
 
-    return $pay_order->gateway(
+    return $pay_order->gateway
+    (
         "test",
-        "test",
-        "yF587AV9Ms94qN2QShFzVR3vFnWkhjbAK3sG",
-        "67e34d63-102f-4bd1-898e-370781d0074d",
+        "ORYX.KZ",
+        "m!$0bIlaTiwS$!4X",
+        "1a41f7ef-99c7-48c5-bca7-a5538c988aee",
         null,
         $request->input('amount'),
         "KZT",
@@ -169,7 +170,8 @@ Route::get('/pay',function(Request $request){
 "https://example.kz/order/1123/fail",
         "RU",
         "HB payment gateway",
-        "test1",
+        "176301072",
         "",
-        "");
+        "ofis@orix.kz"
+    );
 });
