@@ -33,12 +33,12 @@ Route::get('/politika-konfidentsialnosti', [PageController::class, 'politika']);
 Route::get('/populyarnye-magaziny/{slug}', [PageController::class, 'store']);
 Route::get('/zapreshenye-tovary', [PageController::class, 'zapreshenye']);
 Route::get('/obshchie-usloviya', [PageController::class, 'usloviya']);
+Route::get('/novosti/{slug}', [PageController::class, 'newsPage']);
 Route::get('/usloviya-servisa', [PageController::class, 'help']);
 Route::get('/kontakty', [PageController::class, 'contactsUs']);
 Route::get('/o-kompanii', [PageController::class, 'about']);
 Route::get('/otzyvy', [PageController::class, 'reviews']);
 Route::get('/buy-me', [PageController::class, 'buy_me']);
-Route::get('/novosti/{slug}', [PageController::class, 'newsPage']);
 Route::get('/novosti', [PageController::class, 'news']);
 
 Route::match(['GET', 'POST'], '/referal-register/{user}', [ReferalController::class, 'referal_register']);
@@ -150,10 +150,11 @@ Route::group(['prefix' => 'panel', 'middleware' => ['auth']], function () {
     Route::get('ajax/recipient', [AjaxController::class, 'recipient'])->name('ajax.recipient');
     Route::get('ajax/user', [AjaxController::class, 'user'])->name('ajax.user');
 });
-//Route::get('/pay', [PaymentController::class, 'pay']);
+
 Route::get('/pay',function(){
-    $pay_order=new HBepay();
-return $pay_order->gateway("test","test",
+    $pay_order = new HBepay();
+
+    return $pay_order->gateway("test","test",
 "yF587AV9Ms94qN2QShFzVR3vFnWkhjbAK3sG",
 "67e34d63-102f-4bd1-898e-370781d0074d",
 "300022002",10,"KZT","https://example.kz/success.html",

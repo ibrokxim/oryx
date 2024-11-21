@@ -14,9 +14,8 @@ class TransactionController extends Controller
     {
         abort_if(Gate::denies('transactions'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $tab = $request->get('tab', 'replenishment'); // Определяем текущую вкладку
+        $tab = $request->get('tab', 'replenishment');
 
-        // Определяем фильтрацию данных в зависимости от вкладки
         if ($tab === 'replenishment') {
             $items = Transaction::where('outgo', 0)
                 ->when(request('ds'), fn($q) => $q->where('created_at', '>=', request('ds')))
@@ -28,6 +27,12 @@ class TransactionController extends Controller
                             ->orWhere('order', 'like', '%' . request('s') . '%');
                     });
                 })
+                ->when(request('track'), function ($q) {
+                    $q->whereHas('parcel', function ($q) {
+                        $q->where('track', 'like', '%' . request('track') . '%');
+                    });
+                })
+                ->when(request('amount'), fn($q) => $q->where('count', request('amount')))
                 ->orderBy('id', 'desc')
                 ->paginate(20);
         } elseif ($tab === 'payments') {
@@ -41,6 +46,12 @@ class TransactionController extends Controller
                             ->orWhere('order', 'like', '%' . request('s') . '%');
                     });
                 })
+                ->when(request('track'), function ($q) {
+                    $q->whereHas('parcel', function ($q) {
+                        $q->where('track', 'like', '%' . request('track') . '%');
+                    });
+                })
+                ->when(request('amount'), fn($q) => $q->where('count', request('amount')))
                 ->orderBy('id', 'desc')
                 ->paginate(20);
         }

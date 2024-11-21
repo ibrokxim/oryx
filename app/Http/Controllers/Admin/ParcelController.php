@@ -84,7 +84,10 @@ class ParcelController extends Controller
     {
         abort_if(Gate::denies('parcels'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $item = new Parcel();
-        $users = Recipient::pluck('name', 'id');
+        $users = Recipient::get()->mapWithKeys(function ($recipient) {
+            return [$recipient->id => [$recipient->name, $recipient->fname, $recipient->surname]];
+        });
+
         $functions = AdditionalFunction::pluck('name');
         $deliveryMode = DeliveryMode::where('parcel_id')->first();
         $deliveryMethod = $deliveryMode ? $deliveryMode->delivery_method : null;

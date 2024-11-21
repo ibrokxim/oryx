@@ -12,8 +12,8 @@ class PaymentController extends Controller
     public function pay(Request $request)
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id', // Проверяем, что пользователь существует
-            'amount' => 'required|numeric|min:1', // Проверяем, что сумма больше 0
+            'user_id' => 'required|exists:users,id',
+            'amount' => 'required|numeric|min:1',
         ]);
 
         $user = User::find($request->user_id);

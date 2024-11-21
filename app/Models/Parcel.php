@@ -34,10 +34,7 @@ class Parcel extends Model
         'in_date',
         'in_phone',
         'in_status',
-
-        //Integration
         'integration_id'
-        //
     ];
 
     protected $dates = [

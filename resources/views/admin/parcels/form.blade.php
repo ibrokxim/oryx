@@ -59,8 +59,8 @@
                             <input type="hidden" name="recipient_id" id="recipient_id" value="{{ old('recipient_id', $item->recipient_id) }}" />
                             <select id="recipient_select" class="head-input">
                                 <option value="">Выберите получателя</option>
-                                @foreach($users as $id => $name)
-                                    <option value="{{ $id }}">{{ $name }}</option>
+                                @foreach($users as $id => [$name, $fname, $surname])
+                                    <option value="{{ $id }}" data-name="{{ $name }}" data-fname="{{ $fname }}" data-surname="{{ $surname }}">({{$id}}) {{ $name }} {{ $fname }} {{ $surname }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -116,7 +116,6 @@
                             @endforeach
                         </select>
                     </div>
-
                         <div class="new-flex w-two">
                             <p class="in-name">Метод доставки</p>
                             <input type="text" name="delivery_method" value="{{ $deliveryMethod === 'pvz' ? 'Пункт выдачи СДЭК' : ($deliveryMethod === 'address' ? 'До адреса(службой СДЭК)' : ($deliveryMethod === 'pickup' ? 'Самовывоз со склада(Алматы)' : $deliveryMethod)) }}" class="head-input" disabled/>
@@ -131,13 +130,13 @@
 
                     <div class="new-flex">
         	            <p class="in-name">Оплачен</p>
-        	            <div class="radio">
+        	            <div class="checkbox">
         	                <div>
-        	                    <input type="radio" name="payed" id="ch-1" value="1" {{ $item->payed?'checked':'' }} />
+        	                    <input type="checkbox" name="payed" id="ch-1" value="1" {{ $item->payed? 'checked': '' }} />
         	                    <p>Да</p>
         	                </div>
         	                <div>
-        	                    <input type="radio" name="payed" id="ch-2" value="0" {{ $item->payed?'':'checked' }} />
+        	                    <input type="checkbox" name="payed" id="ch-2" value="0" {{ $item->payed? '':'checked' }} />
         	                    <p>Нет</p>
         	                </div>
         	            </div>
@@ -230,5 +229,26 @@
                 $('.itog span').html(total+'$');
             }
 		});
+        document.addEventListener('DOMContentLoaded', function() {
+            const ch1 = document.getElementById('ch-1');
+            const ch2 = document.getElementById('ch-2');
+
+            function toggleCheckboxes() {
+                if (this.checked) {
+                    if (this === ch1) {
+                        ch2.checked = false;
+                    } else {
+                        ch1.checked = false;
+                    }
+                } else {
+                    if (!ch1.checked && !ch2.checked) {
+                        ch2.checked = true;
+                    }
+                }
+            }
+
+            ch1.addEventListener('change', toggleCheckboxes);
+            ch2.addEventListener('change', toggleCheckboxes);
+        });
 	</script>
 @endsection
