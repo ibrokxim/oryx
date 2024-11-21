@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use Gate;
 use App\Models\Parcel;
 use App\Models\Recipient;
+use App\Models\ParcelGood;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -181,5 +183,6 @@ class IndController extends Controller
         header('Content-Disposition: attachment; filename="finance.xlsx"');
         $writer->save('php://output');
     }
+
 
 }

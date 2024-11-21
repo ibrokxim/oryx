@@ -167,7 +167,6 @@ class ParcelController extends Controller
         $item->update($fill);
         $item->update(['user_id' => $item->recipient->user_id]);
 
-        // Обновление дополнительных услуг
         if ($request->has('additional_functions')) {
             $item->additionalFunctions()->sync($request->input('additional_functions'));
         } else {
