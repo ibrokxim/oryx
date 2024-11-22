@@ -1,10 +1,13 @@
 <?php
 
 use App\Http\Controllers\Admin\TransactionController;
+use App\Http\Controllers\Api\PaymentController;
+use App\Models\Transaction;
 use hb\epay\HBepay;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ReferalController;
@@ -152,32 +155,60 @@ Route::group(['prefix' => 'panel', 'middleware' => ['auth']], function () {
     Route::get('ajax/recipient', [AjaxController::class, 'recipient'])->name('ajax.recipient');
     Route::get('ajax/user', [AjaxController::class, 'user'])->name('ajax.user');
 });
+Route::post('/initialize-payment', [PaymentController::class, 'initializePayment'])
+    ->name('payment.initialize');
 
-Route::get('/pay', function (Request $request) {
-    $request->validate([
-        'amount' => 'required|numeric|min:0',
-    ]);
+// Редирект на страницу оплаты (GET)
+Route::get('/payment/{invoiceId}', [PaymentController::class, 'redirectToPaymentGateway'])
+    ->name('payment.redirect');
 
-    $pay_order = new HBepay();
-
-    $invoiceId = Str::uuid()->toString();
-    return $pay_order->gateway(
-        null,
-        "ORYX.KZ",
-        "m!$0bIlaTiwS$!4X",
-        "1a41f7ef-99c7-48c5-bca7-a5538c988aee",
-        $invoiceId,
-        $request->input('amount'),
-        "KZT",
-        "https://example.kz/success.html",
-        "https://example.kz/failure.html",
-        "https://example.kz/",
-        "https://example.kz/order/{$invoiceId}/fail",
-        "RU",
-        "HB payment gateway",
-        "176301072",
-        "",
-        "ofis@orix.kz"
-    );
-});
+// Колбэк от платежного шлюза
+Route::post('/payment/callback', [PaymentController::class, 'handlePaymentCallback'])
+    ->name('payment.callback');
+//Route::get('/pay', function (Request $request) {
+//    $request->validate([
+//        'amount' => 'required|numeric|min:0',
+//    ]);
+//
+//    $pay_order = new HBepay();
+//
+//    $invoiceId = Str::uuid()->toString();
+//    $userId = Auth::id();
+//    try {
+//        DB::beginTransaction();
+//        $payment = new Transaction();
+//        $payment->user_id = $userId;
+//        $payment->invoice_id =  $invoiceId;
+//        $payment->count = $request->input('amount');
+//        $payment->outgo = 0; //Автоматически устанавливаем outgo в 0
+//        $payment->type = 0; //Автоматически устанавливаем type в 0
+//        $payment->save();
+//        $response =  $pay_order->gateway(
+//        "",
+//        "ORYX.KZ",
+//        "m!$0bIlaTiwS$!4X",
+//        "1a41f7ef-99c7-48c5-bca7-a5538c988aee",
+//        $invoiceId,
+//        $request->input('amount'),
+//        "KZT",
+//        "https://example.kz/success.html",
+//        "https://example.kz/failure.html",
+//        "https://example.kz/",
+//        "https://example.kz/order/{$invoiceId}/fail",
+//        "RU",
+//        "HB payment gateway",
+//        "176301072",
+//        "",
+//        "ofis@orix.kz"
+//    );
+//        DB::commit();
+//
+//        return $response;
+//}   catch (\Exception $e) {
+//        DB::rollBack();
+//
+//        \Log::error($e);
+//        return back()->withError('Произошла ошибка при обработке платежа.');
+//    }
+//});
 

@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Observers;
-use App\Http\Controllers\Api\Controller;
+
 use App\Models\Parcel;
+use App\Http\Controllers;
 
 class ParcelObserver
 {

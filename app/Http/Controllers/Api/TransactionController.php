@@ -26,10 +26,6 @@ class TransactionController extends Controller
             return response()->json(['error' => 'Order already paid'], 400);
         }
 
-        if (Transaction::where('parcel_id', $parcel->id)->where('payed', 1)->first()) {
-            return response()->json(['error' => 'Order already paid'], 400);
-        }
-
         DB::beginTransaction();
 
         try {
@@ -55,7 +51,7 @@ class TransactionController extends Controller
                 DB::commit();
                 return response()->json(['message' => 'Payment successful']);
             }
-        }   catch (\Exception $e) {
+        } catch (\Exception $e) {
             DB::rollBack();
 
             Log::error('Payment failed', [
