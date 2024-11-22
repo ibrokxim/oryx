@@ -24,6 +24,12 @@
                             <div class="title about-title">
                                 Как заказать доставку посылки из США?
                             </div>
+
+                            <form action="/pay" method="GET">
+                                <label for="amount">Сумма:</label>
+                                <input type="number" name="amount" id="amount" min="0" step="0.01" required>
+                                <button type="submit">Оплатить</button>
+                            </form>
                             <div class="text about-text">
                                 <p>Хотите экономить до 80% на шопинге от популярных и люксовых брендов?</p>
                                 <p>Покупайте в США одежду, обувь, гаджеты, игрушки со скидками. Выполните три простых шага, чтобы получить покупку из США.</p>

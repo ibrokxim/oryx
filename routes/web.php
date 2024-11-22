@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\RecipientController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Profile\ProfileParcelController;
 use App\Http\Controllers\Admin\AdditionalFunctionsController;
+use Illuminate\Support\Str;
 
 Route::get('profile/dev-auth/{user}', function (User $user) {
     Auth::login($user);
@@ -152,22 +153,26 @@ Route::group(['prefix' => 'panel', 'middleware' => ['auth']], function () {
     Route::get('ajax/user', [AjaxController::class, 'user'])->name('ajax.user');
 });
 
-Route::get('/pay',function(Request $request){
+Route::get('/pay', function (Request $request) {
+    $request->validate([
+        'amount' => 'required|numeric|min:0',
+    ]);
+
     $pay_order = new HBepay();
 
-    return $pay_order->gateway
-    (
-        "test",
+    $invoiceId = Str::uuid()->toString();
+    return $pay_order->gateway(
+        null,
         "ORYX.KZ",
         "m!$0bIlaTiwS$!4X",
         "1a41f7ef-99c7-48c5-bca7-a5538c988aee",
-        null,
+        $invoiceId,
         $request->input('amount'),
         "KZT",
         "https://example.kz/success.html",
-"https://example.kz/failure.html",
+        "https://example.kz/failure.html",
         "https://example.kz/",
-"https://example.kz/order/1123/fail",
+        "https://example.kz/order/{$invoiceId}/fail",
         "RU",
         "HB payment gateway",
         "176301072",
@@ -175,3 +180,4 @@ Route::get('/pay',function(Request $request){
         "ofis@orix.kz"
     );
 });
+
