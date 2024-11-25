@@ -1,11 +1,10 @@
 <?php
 
-use App\Http\Controllers\Api\PaymentController;
-use hb\epay\HBepay;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MetaTegController;
 use App\Http\Controllers\Api\MailController;
 use App\Http\Controllers\Api\PageController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Auth\SocialController;
 use App\Http\Controllers\Api\TransactionController;
@@ -16,7 +15,7 @@ use App\Http\Controllers\Api\Profile\ProfileParcelController;
 
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [RegisterController::class, 'register']);
-Route::post('/send-email/{domain?}', [MailController::class, 'send'])->name('api.mail.send');
+Route::post('/send-email', [MailController::class, 'send'])->name('api.mail.send');
 
 Route::middleware('auth:api')->group(function () {
 	Route::post('logout', [AuthController::class, 'logout']);

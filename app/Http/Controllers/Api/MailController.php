@@ -18,7 +18,7 @@ class MailController extends Controller
         return response()->json(['message' => 'Test email sent successfully']);
     }
 
-    public function send(Request $request, $domain = 'ae')
+    public function send(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',

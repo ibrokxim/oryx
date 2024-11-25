@@ -11,7 +11,6 @@
 
 namespace App\Services;
 
-
 use App\Mail\ContactShipped;
 use Illuminate\Support\Facades\Mail;
 

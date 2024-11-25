@@ -15,6 +15,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Services\ShortcodeService;
 use App\Services\Admin\PageService;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 
@@ -161,7 +162,14 @@ class PageController extends Controller
 
         $purchase = ['nomer' => $nomer, 'products' => $products];
 
-        Mail::to('ofis@orix.kz')->send(new OrderShipped($purchase));
+        $user = Auth::user();
+        if ($user) {
+            Mail::to($user->email)->send(new OrderShipped($purchase));
+        } else {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+//        Mail::to('ofis@orix.kz')->send(new OrderShipped($purchase));
 
         return response()->json(['message' => 'Order sent successfully'], 200);
     }
@@ -171,7 +179,7 @@ class PageController extends Controller
         $name = Arr::get($request, 'name');
 
         if ($email) {
-            Mail::to('ofis@orix.kz')->send(new Email($email, $name));
+            Mail::to($email)->send(new Email($email, $name));
         }
 
         return response()->json(['message' => 'Email sent successfully'], 200);
