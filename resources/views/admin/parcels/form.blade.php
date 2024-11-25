@@ -57,14 +57,13 @@
                         <div class="new-flex w-one">
                             <p class="in-name">Получатель</p>
                             <input type="hidden" name="recipient_id" id="recipient_id" value="{{ old('recipient_id', $item->recipient_id) }}" />
-                            <select id="recipient_select" class="head-input">
+                            <select id="recipient_select" class="head-input" >
                                 <option value="">Выберите получателя</option>
                                 @foreach($users as $id => [$name, $fname, $surname])
                                     <option value="{{ $id }}" data-name="{{ $name }}" data-fname="{{ $fname }}" data-surname="{{ $surname }}">({{$id}}) {{ $name }} {{ $fname }} {{ $surname }}</option>
                                 @endforeach
                             </select>
                         </div>
-{{--        	             {{ Form::select('recipient_id', $users, $item->recipient_id) }}--}}
         	        <div class="new-flex w-two">
         	            <p class="in-name">Трек</p>
         	            <input type="text" name="track" value="{{ request()->input('t',old('track', $item->track)) }}" class="head-input" />
@@ -251,4 +250,16 @@
             ch2.addEventListener('change', toggleCheckboxes);
         });
 	</script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#recipient_select').select2({
+                placeholder: "Выберите получателя",
+                allowClear: true,
+                width: '100%',
+                height: '100%',
+            });
+        });
+    </script>
 @endsection
