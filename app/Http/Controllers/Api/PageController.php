@@ -168,7 +168,6 @@ class PageController extends Controller
         } else {
             return response()->json(['message' => 'User not found'], 404);
         }
-
 //        Mail::to('ofis@orix.kz')->send(new OrderShipped($purchase));
 
         return response()->json(['message' => 'Order sent successfully'], 200);

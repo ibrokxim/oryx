@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Country;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Mail\ContactShipped;
