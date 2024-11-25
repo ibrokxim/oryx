@@ -34,7 +34,7 @@ class MailController extends Controller
         $phone = Arr::get($request, 'phone', 'no phone');
         $country = 'KZ';
 
-        Mail::to('oryx.usa.kz@gmail.com')->send(new ContactShipped($validated, $message, $phone, $country));
+        Mail::to($validated['email'])->send(new ContactShipped($validated, $message, $phone, $country));
 
         return response()->json(['status' => 'success', 'message' => 'Email sent successfully']);
     }
