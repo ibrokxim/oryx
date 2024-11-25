@@ -161,7 +161,6 @@
 	    </form>
 	</div>
 
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('recipient_select').addEventListener('change', function() {

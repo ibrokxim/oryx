@@ -172,15 +172,15 @@ Route::get('/pay', function (Request $request) {
     $pay_order = new HBepay();
 
     $invoiceId = Str::uuid()->toString();
-    //$userId = Auth::id();
+    $userId = Auth::id();
     try {
         DB::beginTransaction();
         $payment = new Transaction();
-      //  $payment->user_id = $userId;
+       $payment->user_id = $userId;
         $payment->invoice_id =  $invoiceId;
         $payment->count = $request->input('amount');
-        $payment->outgo = 0; //Автоматически устанавливаем outgo в 0
-        $payment->type = 0; //Автоматически устанавливаем type в 0
+        $payment->outgo = 0;
+        $payment->type = 0;
         $payment->save();
         $response =  $pay_order->gateway(
         "",
