@@ -3,11 +3,13 @@
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Models\Transaction;
+use GuzzleHttp\Client;
 use hb\epay\HBepay;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ReferalController;
@@ -163,51 +165,89 @@ Route::group(['prefix' => 'panel', 'middleware' => ['auth']], function () {
 //
 //Route::post('/payment/callback', [PaymentController::class, 'handlePaymentCallback'])
 //    ->name('payment.callback');
-
 Route::get('/pay', function (Request $request) {
     $request->validate([
-        'amount' => 'required|numeric|min:0',
+        'amount' => 'required|numeric|min:5',
     ]);
 
-    $pay_order = new HBepay();
+    $client = new Client();
+    $invoiceID = Str::uuid()->toString();
+    // Prepare token request parameters
+    $userId = 123;
+    $tokenRequestData = [
+        'grant_type'    => 'client_credentials',
+        'scope'         => 'webapi usermanagement email_send verification statement statistics payment',
+        'client_id'     => 'test',
+        'client_secret' => 'yF587AV9Ms94qN2QShFzVR3vFnWkhjbAK3sG',
+        'invoiceID'     => $invoiceID,
+        'secret_hash'   => 'HelloWorld123#',
+        'amount'        => $request->input('amount'),
+        'currency'      => 'KZT',
+        'terminal'      => '67e34d63-102f-4bd1-898e-370781d0074d',
+        'postLink'      => 'https://example.kz/',
+        'failurePostLink' => 'https://example.kz/order/' . $invoiceID . '/fail',
+    ];
 
-    $invoiceId = Str::uuid()->toString();
-    $userId = Auth::id();
+    // Make POST request to obtain token
+    try {
+        $response = $client->post('https://testoauth.homebank.kz/epay2/oauth2/token', [
+            'form_params' => $tokenRequestData,
+        ]);
+
+        $tokenResponse = json_decode($response->getBody(), true);
+
+        if (!isset($tokenResponse['access_token'])) {
+            throw new Exception('Failed to obtain access token.');
+        }
+
+        $accessToken = $tokenResponse['access_token'];
+    } catch (\Exception $e) {
+        Log::error($e->getMessage());
+        return back()->withError('Произошла ошибка при получении токена.');
+    }
+
+    // Prepare payment parameters
+    $paymentParams = [
+        'invoiceId'     => $tokenRequestData['invoiceID'],
+        'invoiceIdAlt'  => '8564546',
+        'backLink'      => 'https://example.kz/success.html',
+        'failureBackLink' => 'https://example.kz/failure.html',
+        'postLink'      => 'https://example.kz/',
+        'failurePostLink' => 'https://example.kz/order/' . $invoiceID . '/fail',
+        'language'      => 'rus',
+        'description'   => 'Оплата в интернет магазине',
+        'accountId'     => 'testuser1',
+        'terminal'      => '67e34d63-102f-4bd1-898e-370781d0074d',
+        'amount'        => $request->input('amount'),
+        'currency'      => 'KZT',
+        'phone'         => '77777777777',
+        'name'          => 'Arman Ali',
+        'email'         => 'example@example.com',
+        'auth'          => $tokenResponse,
+        'data'          => json_encode(['statement' => ['name' => 'Arman Ali', 'invoiceID' => '80000016']]),
+    ];
+
+    // Save payment details in the database
     try {
         DB::beginTransaction();
+
         $payment = new Transaction();
-       $payment->user_id = $userId;
-        $payment->invoice_id =  $invoiceId;
-        $payment->count = $request->input('amount');
+        $payment->user_id = Auth::id();
+        $payment->order = $paymentParams['invoiceId'];
+        $payment->count = $paymentParams['amount'];
         $payment->outgo = 0;
         $payment->type = 0;
         $payment->save();
-        $response =  $pay_order->gateway(
-        "",
-        "ORYX.KZ",
-        "m!$0bIlaTiwS$!4X",
-        "1a41f7ef-99c7-48c5-bca7-a5538c988aee",
-        $invoiceId,
-        $request->input('amount'),
-        "KZT",
-        "https://example.kz/success.html",
-        "https://example.kz/failure.html",
-        "https://example.kz/",
-        "https://example.kz/order/{$invoiceId}/fail",
-        "RU",
-        "HB payment gateway",
-        "176301072",
-        "",
-        "ofis@orix.kz"
-    );
+
         DB::commit();
-
-        return $response;
-}   catch (\Exception $e) {
+    } catch (\Exception $e) {
         DB::rollBack();
-
-        \Log::error($e);
-        return back()->withError('Произошла ошибка при обработке платежа.');
+        Log::error($e->getMessage());
+        return back()->withError('Произошла ошибка при сохранении платежа.');
     }
-});
 
+    return view('payment', compact('paymentParams'));
+
+
+
+});

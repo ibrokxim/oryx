@@ -78,20 +78,3 @@ Route::get('/pay', [PaymentController::class, 'pay']);
 Route::get('/login/google', [SocialController::class, 'redirect']);
 Route::get('/login/google/callback', [SocialController::class, 'callback']);
 
-//Route::get('/pay',function(){
-//    $pay_order=new HBepay();
-//    return $pay_order->gateway("test","test",
-//        "yF587AV9Ms94qN2QShFzVR3vFnWkhjbAK3sG",
-//        "67e34d63-102f-4bd1-898e-370781d0074d",
-//        "300022002",10,"KZT","https://example.kz/success.html",
-//        "https://example.kz/failure.html","https://example.kz/",
-//        "https://example.kz/order/1123/fail","RU", "HB payment gateway",
-//        "test1","","");
-//});
-
-//Route::post('/create-payment', [PaymentController::class, 'pay']);
-//Route::get('/payment/success', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
-//Route::get('/payment/failure', [PaymentController::class, 'paymentFailure'])->name('payment.failure');
-//Route::post('/payment/notify', [PaymentController::class, 'paymentNotify'])->name('payment.notify');
-
-

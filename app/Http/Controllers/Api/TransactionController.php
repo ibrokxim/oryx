@@ -10,9 +10,35 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
 class TransactionController extends Controller
 {
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|integer',
+            'invoice_id' => 'required|string',
+            'tenge' => 'required|numeric',
+            'type' => 'required|integer',
+            'outgo' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Создание новой транзакции
+        $transaction = Transaction::create([
+            'user_id' => $request->input('user_id'),
+            'order' => $request->input('invoice_id'),
+            'tenge' => $request->input('tenge'),
+            'type' => $request->input('type'),
+            'outgo' => $request->input('outgo'),
+        ]);
+
+        return response()->json(['message' => 'Транзакция успешно создана', 'transaction' => $transaction], 201);
+    }
     public function pay(Request $request, $id)
     {
         $currency = Setting::where('code', 'currency')->first()->value;

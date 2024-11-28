@@ -186,7 +186,6 @@
 		      select: function( event, ui ) {
 		      	$('#recipient_id').val(ui.item.recipient);
 		      	$('#user_id').val(ui.item.user);
-		        //console.log(ui.item);
 		      }
 		    });
 
@@ -195,10 +194,8 @@
                 $clone.find('input').val('');
                 $('#goods .value').hide();
                 $('#goods .remove').show();
-
                 $clone.find('.value').show();
                 $clone.find('.remove').hide();
-
                 $clone.appendTo("#goods");
                 calc();
             });
