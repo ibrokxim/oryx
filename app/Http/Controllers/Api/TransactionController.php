@@ -28,7 +28,6 @@ class TransactionController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // Создание новой транзакции
         $transaction = Transaction::create([
             'user_id' => $request->input('user_id'),
             'order' => $request->input('invoice_id'),

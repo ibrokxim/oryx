@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Profile;
 
+use App\Models\Referal;
 use Carbon\Carbon;
 use App\Models\Instead;
 use App\Models\Setting;
@@ -24,8 +25,9 @@ class ProfileController extends Controller
 
     public function userBalance()
     {
+        $user_id = Auth::id();
         $balance = Auth::user()->balance;
-        return response()->json(['balance' => $balance], 200);
+        return response()->json(['balance' => $balance, 'user_id' => $user_id], 200);
     }
 
     public function settings(Request $request)

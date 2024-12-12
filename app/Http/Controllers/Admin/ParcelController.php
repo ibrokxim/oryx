@@ -33,8 +33,6 @@ class ParcelController extends Controller
                 ->when(request('city') && request('out', 6) != 15, function ($q) {
                     $q->where('city', 'like', request('city') . '%');
                 })
-//				->where('created_at', '>=', request('ds', now()->subMonth()->format('Y-m-d')))
-//        		->where('created_at', '<=', request('de', now()->format('Y-m-d')) . ' 23:59')
                 ->when(request('in_status'), function ($q) {
                     $q->where('in_status', request('in_status') - 1);
                 })
@@ -85,7 +83,14 @@ class ParcelController extends Controller
         abort_if(Gate::denies('parcels'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $item = new Parcel();
         $users = Recipient::get()->mapWithKeys(function ($recipient) {
-            return [$recipient->id => [$recipient->name, $recipient->fname, $recipient->surname]];
+            return [
+                $recipient->id => [
+                    $recipient->name,
+                    $recipient->fname,
+                    $recipient->surname,
+                    'user_id' => $recipient->user_id
+                ]
+            ];
         });
 
         $functions = AdditionalFunction::pluck('name');
@@ -101,8 +106,10 @@ class ParcelController extends Controller
             $request['prod_price'] = 0;
         }
         abort_if(Gate::denies('parcels'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         $request->validate([
             'recipient_id' => 'required|exists:recipients,id',
+            'user_id' => 'required|exists:users,id',
             'goods' => 'required|array|min:1',
             'goods.name.*' => 'required',
             'goods.price.*' => 'required',
@@ -111,7 +118,11 @@ class ParcelController extends Controller
             'city_out' => 'required|in:1,2',
         ]);
 
-        $item = Parcel::create(array_merge($request->all(), ['name' => $request->track]));
+        $item = Parcel::create(array_merge(
+            $request->all(),
+            ['name' => $request->track, 'user_id' => $request->user_id] // Добавляем user_id
+        ));
+
         $input_goods = $request->input('goods');
         $goods = [];
 
@@ -129,8 +140,10 @@ class ParcelController extends Controller
         if ($request->has('additional_functions')) {
             $item->additionalFunctions()->sync($request->input('additional_functions'));
         }
+
         return redirect()->route('parcels.index');
     }
+
 
     public function edit(Parcel $item, $id)
     {
@@ -138,7 +151,13 @@ class ParcelController extends Controller
         $item = Parcel::findOrFail($id);
 
         $users = Recipient::get()->mapWithKeys(function ($recipient) {
-            return [$recipient->id => [$recipient->name, $recipient->fname, $recipient->surname]];
+            return [$recipient->id => [
+                $recipient->name,
+                $recipient->fname,
+                $recipient->surname,
+                'user_id' => $recipient->user_id
+                ]
+            ];
         });
 
         $functions = AdditionalFunction::pluck('name');

@@ -33,7 +33,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('profile/transactions', [ProfileController::class, 'transactions']);
     Route::get('profile/referal', [ProfileController::class, 'referal']);
     Route::post('profile/instead', [ProfileController::class, 'instead']);
-	//Route::get('/profile/parcels', [ProfileParcelController::class, 'index']);
     Route::post('/profile/parcels', [ProfileParcelController::class, 'store']);
     Route::delete('/profile/parcels/{id}', [ProfileParcelController::class, 'delete']);
     Route::post('/profile/parcels/{id}/pay', [ProfileParcelController::class, 'pay']);
@@ -78,3 +77,4 @@ Route::get('/pay', [PaymentController::class, 'pay']);
 Route::get('/login/google', [SocialController::class, 'redirect']);
 Route::get('/login/google/callback', [SocialController::class, 'callback']);
 
+Route::post('/transactions', [TransactionController::class, 'store']);

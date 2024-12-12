@@ -57,10 +57,23 @@
                         <div class="new-flex w-one">
                             <p class="in-name">Получатель</p>
                             <input type="hidden" name="recipient_id" id="recipient_id" value="{{ old('recipient_id', $item->recipient_id) }}" />
+                            <input type="hidden" name="user_id" id="user_id" value="{{ old('user_id', $item->user_id) }}" />
+
                             <select id="recipient_select" class="head-input" >
                                 <option value="">Выберите получателя</option>
-                                @foreach($users as $id => [$name, $fname, $surname])
-                                    <option value="{{ $id }}" data-name="{{ $name }}" data-fname="{{ $fname }}" data-surname="{{ $surname }}">({{$id}}) {{ $name }} {{ $fname }} {{ $surname }}</option>
+                                @foreach($users as $id => $userData)
+                                    @if(count($userData) >= 4)
+                                    <option
+                                        value="{{ $id }}"
+                                        name="name"
+                                        data-name="{{ $userData[0] }}"
+                                        data-fname="{{ $userData[1] }}"
+                                        data-surname="{{ $userData[2] }}"
+                                        data-user-id="{{ $userData['user_id'] }}">
+                                        ({{$id}}) {{ $userData[0] }} {{ $userData[1] }} {{ $userData[2] }}</option>
+                                    @else
+                                        <option value="{{ $id }}" disabled>Некорректные данные</option>
+                                    @endif
                                 @endforeach
                             </select>
                         </div>
@@ -103,7 +116,7 @@
                             <select name="city_out" class="head-input" required>
                                 <option value="">Выберите город отправки</option>
                                 <option value="1" {{ old('city_out', $item->city_out) == 1 ? 'selected' : '' }}>Нью-Йорк</option>
-                                <option value="2" {{ old('city_out', $item->city_out) == 2 ? 'selected' : '' }}>Делавер</option>
+                                <option value="2" {{ old('city_Яout', $item->city_out) == 2 ? 'selected' : '' }}>Делавер</option>
                             </select>
                     </div>
                     <div class="new-flex w-two">
@@ -254,7 +267,14 @@
                 placeholder: "Выберите получателя",
                 allowClear: true,
                 width: '100%',
-                height: '100%',
+            });
+
+            $('#recipient_select').on('change', function() {
+                let selectedRecipientId = $(this).val();
+                let selectedUserId = $(this).find(':selected').data('user-id');
+
+                $('#recipient_id').val(selectedRecipientId);
+                $('#user_id').val(selectedUserId);
             });
         });
     </script>

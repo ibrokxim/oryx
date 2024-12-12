@@ -67,7 +67,6 @@
                 </span>
             @enderror
 
-
             <input type="password" name="password" placeholder="Пароль" class="unstyled @error('password') is-invalid @enderror" required />
             @error('password')
                 <span class="invalid-feedback" role="alert">

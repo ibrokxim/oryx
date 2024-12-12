@@ -18,40 +18,49 @@ use Illuminate\Support\Facades\Auth;
 
 class ProfileParcelController extends Controller
 {
-	public function index(Request $request)
-	{
-		$items = Parcel::with(['goods'])
-			    ->where('user_id', Auth::user()->id);
+    public function index(Request $request)
+    {
+        $query = Parcel::with(['goods', 'recipient'])
+            ->where('user_id', Auth::user()->id);
 
-        if ($request->has('status')) {
-			$items = $items->where('status', $request->input('status'));
-		}
+        // Применение фильтров
+        $query->when($request->has('status'), function ($q) use ($request) {
+            return $q->where('status', $request->input('status'));
+        });
 
-		if ($request->input('s', '')) {
-			$items = $items->where(function ($query) use ($request) {
-				$query->where('name', 'like', "%" . $request->input('s') . "%")
-					->orWhere('track', 'like', "%" . $request->input('s') . "%")
-					->orWhere('id', 'like', "%" . $request->input('s') . "%");
-			});
-		}
+        $query->when($request->input('s', ''), function ($q) use ($request) {
+            return $q->where(function ($subQuery) use ($request) {
+                $subQuery->where('name', 'like', "%" . $request->input('s') . "%")
+                    ->orWhere('track', 'like', "%" . $request->input('s') . "%")
+                    ->orWhere('id', 'like', "%" . $request->input('s') . "%");
+            });
+        });
 
-		$items = $items->orderBy('created_at', 'desc')->get();
+        // Сортировка и получение результатов
+        $items = $query->orderBy('created_at', 'desc')->get();
 
-		$cities = [];
-		if ($request->input('status') == 3)
-        {
-			$cities = ['Город'];
-			$countries = Setting::where([['type', 2], ['active', 1]])->get();
-			foreach ($countries as $country) {
-				foreach (explode("\r\n", $country->value) as $value) {
-					$cities[$value] = $value;
-				}
-			}
-		}
+        // Добавление ФИО
+        $items->transform(function ($item) {
+            $item->recipient_fio = $item->recipient
+                ? implode(' ', array_filter([$item->recipient->name, $item->recipient->fname, $item->recipient->surname]))
+                : null;
+            return $item;
+        });
+
+        // Логика городов (без изменений)
+        $cities = [];
+        if ($request->input('status') == 3) {
+            $cities = ['Город'];
+            $countries = Setting::where([['type', 2], ['active', 1]])->get();
+            foreach ($countries as $country) {
+                foreach (explode("\r\n", $country->value) as $value) {
+                    $cities[$value] = $value;
+                }
+            }
+        }
 
         return response()->json(['items' => $items, 'cities' => $cities]);
-	}
-
+    }
     public function store(Request $request)
     {
         DB::beginTransaction();

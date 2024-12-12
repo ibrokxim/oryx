@@ -145,5 +145,4 @@ class IndexController extends Controller
         Log::info(["createdUserBitrixId" => $newContactId, "createdUserDealBitrixId" => $result['result']]);
         return true;
     }
-
 }
