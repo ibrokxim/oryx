@@ -88,7 +88,7 @@
         		        </div>
         	        @endif
         	        <div class="new-flex w-one">
-        	            <p class="in-name">Номер посылки</p>
+        	            <p class="in-name">Партия посылки</p>
         	            <input type="text" name="pid" value="{{ old('pid', $item->pid) }}" class="head-input" />
         	        </div>
         	        <div class="new-flex w-two">
@@ -121,8 +121,8 @@
                     </div>
                     <div class="new-flex w-two">
         	            <p class="in-name">Дополнительные услуги</p>
-                        <select name="additional_functions" id="functions">
-                            <option value="">Выберите дополнительную услугу</option>
+                        <select name="additional_functions[]" id="functions" multiple>
+                            <option value="">Выберите дополнительные услуги</option>
                             @foreach($functions as $id => $name)
                                 <option value="{{ $id }}" {{ $item->additionalFunctions->contains($id) ? 'selected' : '' }}>{{ $name }}</option>
                             @endforeach

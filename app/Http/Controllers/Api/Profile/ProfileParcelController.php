@@ -20,10 +20,9 @@ class ProfileParcelController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Parcel::with(['goods', 'recipient'])
+        $query = Parcel::with(['goods', 'recipient', 'additionalFunctions'])
             ->where('user_id', Auth::user()->id);
 
-        // Применение фильтров
         $query->when($request->has('status'), function ($q) use ($request) {
             return $q->where('status', $request->input('status'));
         });
@@ -39,15 +38,23 @@ class ProfileParcelController extends Controller
         // Сортировка и получение результатов
         $items = $query->orderBy('created_at', 'desc')->get();
 
-        // Добавление ФИО
+        // Добавление ФИО и дополнительных функций
         $items->transform(function ($item) {
             $item->recipient_fio = $item->recipient
                 ? implode(' ', array_filter([$item->recipient->name, $item->recipient->fname, $item->recipient->surname]))
                 : null;
+
+            $item->additional_functions = $item->additionalFunctions->map(function ($function) {
+                return [
+                    'id' => $function->id,
+                    'name' => $function->name,
+                    'description' => $function->description,
+                ];
+            });
+
             return $item;
         });
 
-        // Логика городов (без изменений)
         $cities = [];
         if ($request->input('status') == 3) {
             $cities = ['Город'];
@@ -60,6 +67,7 @@ class ProfileParcelController extends Controller
         }
 
         return response()->json(['items' => $items, 'cities' => $cities]);
+
     }
     public function store(Request $request)
     {

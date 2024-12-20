@@ -24,8 +24,8 @@ class AdditionalFunctionsController extends Controller
     {
        $validated = $request->validate([
           'name' => 'required',
-          'text' => 'required',
-          'price' => 'required',
+          'text' => 'nullable',
+          'price' => 'nullable',
        ]);
        $addFunction = new AdditionalFunction($validated);
        $addFunction->save();
@@ -42,8 +42,8 @@ class AdditionalFunctionsController extends Controller
     {
         $validatedData = $request->validate([
            'name'=> 'required|max:255',
-           'text'=> 'required|max:1000',
-           'price'=> 'required',
+           'text'=> 'nullable|max:1000',
+           'price'=> 'nullable',
         ]);
         $addFunction = AdditionalFunction::findOrFail($id);
         $addFunction->update($validatedData);

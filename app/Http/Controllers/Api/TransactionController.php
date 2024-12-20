@@ -141,4 +141,5 @@ class TransactionController extends Controller
             return response()->json(['error' => 'Payment failed'], 500);
         }
     }
+
 }

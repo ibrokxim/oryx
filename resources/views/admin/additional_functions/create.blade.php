@@ -42,7 +42,7 @@
                         </div>
                         <div class="new-flex w-two">
                             <p class="input-name">Цена</p>
-                            <input type="text" name="price" class="input-withid"  placeholder="Введите цену" />
+                            <input type="text" name="price" class="input-withid"  placeholder="Введите цену"/>
 
                             @error('name')
                             <span class="invalid-feedback" role="alert">

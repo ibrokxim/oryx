@@ -71,24 +71,6 @@ class ProfileController extends Controller
             return response()->json(['message' => 'Settings updated'], 200);
         }
 
-//		if ($request->isMethod('post')) {
-//			if (!$request->input('name') || !$request->input('surname'))
-//				return response()->json(['error' => 'Name and Surname are required'], 400);
-//
-//			$user = Auth::user();
-//			$fill = $request->only(['name', 'fname', 'surname', 'phone', 'password']);
-//			$fill['phone'] = preg_replace("/[^0-9]/", '', $fill['phone']);
-//
-//			if (!$fill['password']) {
-//				unset($fill['password']);
-//			} else {
-//				$fill['password'] = Hash::make($fill['password']);
-//			}
-//
-//			$user->update($fill);
-//			return response()->json(['message' => 'Settings updated'], 200);
-//		}
-
 		if ($request->isMethod('get')) {
 			$user = Auth::user();
 //            $user = User::where('id', '=', 1);
