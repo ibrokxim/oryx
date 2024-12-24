@@ -173,8 +173,6 @@
                                     </svg>
                                 </button>
                             </div>
-
-
                         </td>
                         <td style="max-width: 200px;">
                             оплата

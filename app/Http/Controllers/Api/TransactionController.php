@@ -6,9 +6,9 @@ use App\Models\Parcel;
 use App\Models\Setting;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
@@ -17,8 +17,7 @@ class TransactionController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required|integer',
-            'invoice_id' => 'required|string',
+            'order' => 'required|string',
             'tenge' => 'required|numeric',
             'type' => 'required|integer',
             'outgo' => 'required|integer',
@@ -27,7 +26,7 @@ class TransactionController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
+        $user = Auth::user();
         $transaction = Transaction::create([
             'user_id' => $request->input('user_id'),
             'order' => $request->input('invoice_id'),
@@ -35,6 +34,8 @@ class TransactionController extends Controller
             'type' => $request->input('type'),
             'outgo' => $request->input('outgo'),
         ]);
+        $user->balance += $request->input('tenge');
+        $user->save();
 
         return response()->json(['message' => 'Транзакция успешно создана', 'transaction' => $transaction], 201);
     }

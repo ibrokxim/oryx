@@ -87,6 +87,11 @@
         		            <input type="text" name="in_track" value="{{ old('in_track', $item->in_track) }}" class="head-input" />
         		        </div>
         	        @endif
+                    <div class="new-flex w-one">
+                        <p class="in-name">Пользователь</p>
+                        <input type="text" name="in_track" value="{{ old('in_track', $item->in_track) }}" class="head-input" />
+                    </div>
+
         	        <div class="new-flex w-one">
         	            <p class="in-name">Партия посылки</p>
         	            <input type="text" name="pid" value="{{ old('pid', $item->pid) }}" class="head-input" />
@@ -121,13 +126,14 @@
                     </div>
                     <div class="new-flex w-two">
         	            <p class="in-name">Дополнительные услуги</p>
-                        <select name="additional_functions[]" id="functions" multiple>
+                        <select name="additional_functions" id="functions">
                             <option value="">Выберите дополнительные услуги</option>
                             @foreach($functions as $id => $name)
                                 <option value="{{ $id }}" {{ $item->additionalFunctions->contains($id) ? 'selected' : '' }}>{{ $name }}</option>
                             @endforeach
                         </select>
                     </div>
+                        <div class="new-flex w-two" id="additional-fields-container"></div>
                         <div class="new-flex w-two">
                             <p class="in-name">Метод доставки</p>
                             <input type="text" name="delivery_method" value="{{ $deliveryMethod === 'pvz' ? 'Пункт выдачи СДЭК' : ($deliveryMethod === 'address' ? 'До адреса(службой СДЭК)' : ($deliveryMethod === 'pickup' ? 'Самовывоз со склада(Алматы)' : $deliveryMethod)) }}" class="head-input" disabled/>
@@ -275,6 +281,49 @@
 
                 $('#recipient_id').val(selectedRecipientId);
                 $('#user_id').val(selectedUserId);
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const functionsSelect = document.getElementById('functions');
+            const additionalFieldsContainer = document.getElementById('additional-fields-container');
+
+            functionsSelect.addEventListener('change', function() {
+                // Clear existing input fields
+                additionalFieldsContainer.innerHTML = '';
+
+                // Add input fields for each selected function
+                Array.from(this.selectedOptions).forEach(option => {
+                    if (option.value) {
+                        const functionId = option.value;
+
+                        // Create container for additional inputs
+                        const container = document.createElement('div');
+                        container.classList.add('additional-fields');
+                        container.dataset.functionId = functionId;
+
+                        // Create input for description
+                        const descriptionLabel = document.createElement('label');
+                        descriptionLabel.textContent = `Описание для ${option.text}:`;
+                        container.appendChild(descriptionLabel);
+                        const descriptionInput = document.createElement('input');
+                        descriptionInput.type = 'text';
+                        descriptionInput.name = `additional_functions_descriptions[${functionId}]`;
+                        container.appendChild(descriptionInput);
+
+                        // Create input for price
+                        const priceLabel = document.createElement('label');
+                        priceLabel.textContent = `Цена для ${option.text}:`;
+                        container.appendChild(priceLabel);
+                        const priceInput = document.createElement('input');
+                        priceInput.type = 'number';
+                        priceInput.name = `additional_functions_prices[${functionId}]`;
+                        container.appendChild(priceInput);
+
+                        additionalFieldsContainer.appendChild(container);
+                    }
+                });
             });
         });
     </script>

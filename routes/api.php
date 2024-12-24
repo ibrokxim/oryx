@@ -43,6 +43,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/parcels/{id}/pay', [TransactionController::class, 'pay']);
     Route::post('/parcels/pay-many', [TransactionController::class, 'payMany']);
     Route::get('/profile/balance', [ProfileController::class, 'userBalance']);
+    Route::post('/transactions', [TransactionController::class, 'store']);
 });
 
 Route::post('/email/verification-notification', [VerificationController::class, 'resend'])
@@ -77,4 +78,3 @@ Route::get('/pay', [PaymentController::class, 'pay']);
 Route::get('/login/google', [SocialController::class, 'redirect']);
 Route::get('/login/google/callback', [SocialController::class, 'callback']);
 
-Route::post('/transactions', [TransactionController::class, 'store']);

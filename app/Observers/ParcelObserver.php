@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
+use App\Http\Controllers\Controller;
 use App\Models\Parcel;
-use App\Http\Controllers;
 
 class ParcelObserver
 {

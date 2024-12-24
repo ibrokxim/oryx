@@ -113,14 +113,13 @@ class ParcelController extends Controller
             'goods' => 'required|array|min:1',
             'goods.name.*' => 'required',
             'goods.price.*' => 'required',
-            'additional_functions' => 'nullable',
-            'additional_functions.*' => 'exists:additional_functions,id',
+            'additional_function' => 'nullable|exists:additional_functions,id',
             'city_out' => 'required|in:1,2',
         ]);
 
         $item = Parcel::create(array_merge(
             $request->all(),
-            ['name' => $request->track, 'user_id' => $request->user_id] // Добавляем user_id
+            ['name' => $request->track, 'user_id' => $request->user_id]
         ));
 
         $input_goods = $request->input('goods');
@@ -137,13 +136,17 @@ class ParcelController extends Controller
 
         $item->goods()->saveMany($goods);
 
-        if ($request->has('additional_functions')) {
-            $item->additionalFunctions()->sync($request->input('additional_functions'));
+        if ($request->has('additional_function')) {
+            $item->additionalFunctions()->sync([
+                $request->input('additional_function') => [
+                    'description' => $request->input('additional_function_description', ''),
+                    'price' => $request->input('additional_function_price', 0),
+                ]
+            ]);
         }
 
         return redirect()->route('parcels.index');
     }
-
 
     public function edit(Parcel $item, $id)
     {
@@ -156,7 +159,7 @@ class ParcelController extends Controller
                 $recipient->fname,
                 $recipient->surname,
                 'user_id' => $recipient->user_id
-                ]
+            ]
             ];
         });
 
@@ -173,9 +176,8 @@ class ParcelController extends Controller
         $request->validate([
             'track' => 'required|max:190',
             'recipient_id' => 'required|exists:recipients,id',
-            'additional_functions' => 'nullable',
-            'additional_functions.*' => 'exists:additional_functions,id',
-            'city_out' => 'required|in:1,2', // Добавьте валидацию для поля city_out
+            'additional_function' => 'nullable|exists:additional_functions,id',
+            'city_out' => 'required|in:1,2',
         ]);
 
         $item = Parcel::findOrFail($id);
@@ -190,8 +192,13 @@ class ParcelController extends Controller
         $item->update($fill);
         $item->update(['user_id' => $item->recipient->user_id]);
 
-        if ($request->has('additional_functions')) {
-            $item->additionalFunctions()->sync($request->input('additional_functions'));
+        if ($request->has('additional_function')) {
+            $item->additionalFunctions()->sync([
+                $request->input('additional_function') => [
+                    'description' => $request->input('additional_function_description', ''),
+                    'price' => $request->input('additional_function_price', 0),
+                ]
+            ]);
         } else {
             $item->additionalFunctions()->detach();
         }

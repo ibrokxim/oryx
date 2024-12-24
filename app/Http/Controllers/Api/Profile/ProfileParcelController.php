@@ -65,8 +65,8 @@ class ProfileParcelController extends Controller
                 }
             }
         }
-
-        return response()->json(['items' => $items, 'cities' => $cities]);
+        $user_id = Auth::user()->id;
+        return response()->json(['items' => $items, 'cities' => $cities, 'user_id' => $user_id]);
 
     }
     public function store(Request $request)
