@@ -241,31 +241,38 @@ class ProfileController extends Controller
 
     public function notifications(Request $request)
     {
-        $userId = Auth::user()->id;
-
-        $query = Notification::where('user_id', $userId)
-            ->orderBy('read')
-            ->orderBy('created_at', 'desc');
-
-        $unreadCount = $query->where('read', 0)->count();
+        $items = Notification::where('user_id', Auth::user()->id)->orderBy('read')->orderBy('created_at', 'desc')->get();
+        $read = Notification::where('user_id', Auth::user()->id)->where('read', 0)->count();
 
         if ($request->input('read')) {
-            $query = $query->where('read', 0);
+            $items = $items->where('read', 0);
         }
 
-        $items = $query->get();
-
-        Notification::where('user_id', $userId)
-            ->where('read', 0)
-            ->update(['read' => 1]);
-
-        return response()->json(['notifications' => $items, 'unread_count' => $unreadCount], 200);
+        return response()->json(['notifications' => $items, 'unread_count' => $read], 200);
     }
+
+    public function changeNotificationStatus(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer|exists:notifications,id',
+        ]);
+
+        $notification = Notification::where('user_id', Auth::user()->id)
+                                    ->where('id', $request->input('id'))
+                                    ->first();
+        if ($notification) {
+            $notification->read = 1;
+            $notification->save();
+            return response()->json(['message' => 'Notification status updated'], 200);
+        }
+
+        return response()->json(['error' => 'Notification not found or not authorized'], 404);
+    }
+
 
     public function unreadNotifications(Request $request)
     {
         $userId = Auth::user()->id;
-
         $query = Notification::where('user_id', $userId)
             ->orderBy('read')
             ->orderBy('created_at', 'desc');

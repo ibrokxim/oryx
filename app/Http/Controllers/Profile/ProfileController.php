@@ -244,11 +244,7 @@ class ProfileController extends Controller
 
     public function referal(Request $request)
     {
-
-
         $referals = Referal::with(['friend'])->whereHas('friend')->where('user_id', Auth::user()->id)->get();
-
-
         return view('profile.referal', ['referals' => $referals]);
     }
 
