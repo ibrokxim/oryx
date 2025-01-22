@@ -107,6 +107,7 @@ Route::group(['prefix' => 'profile', 'middleware' => ['auth', 'check.fio.user']]
 Route::group(['prefix' => 'panel', 'middleware' => ['auth']], function () {
     Route::get('/', [IndexController::class, 'index'])->name('admin.index');
     Route::get('/cashback', [IndexController::class, 'cashback'])->name('admin.cashback');
+    Route::get('/export-excel', [ParcelController::class, 'exportExcel'])->name('admin.export-excel');
 
     Route::resource('admins', AdminController::class);
     Route::post('admins/delete', [AdminController::class, 'delete'])->name('admins.delete');

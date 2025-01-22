@@ -12,6 +12,9 @@ use App\Models\DeliveryMode;
 use Illuminate\Support\Facades\DB;
 use App\Models\AdditionalFunction;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Rap2hpoutre\FastExcel\FastExcel;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -237,41 +240,72 @@ class ParcelController extends Controller
 
     public function load(Request $request, $status = 0)
     {
-        if (!$request->input('out') || $request->input('out') == 0)
-        {
-            $out = 6;
-        } else {
-            $out = $request->input('out');
+        ini_set('memory_limit', '2G');
+//        if (!$request->input('out') || $request->input('out') == 0)
+//        {
+//            $out = 6;
+//        } else {
+//            $out = $request->input('out');
+//        }
+//
+//        $items = Parcel::select(['user_id', 'track', 'city', 'name', 'weight', 'status', 'integration_id', 'date_out'])->where('status', $status)
+//            ->where('country_out', $out)
+//            ->where('created_at', '>=', request('ds', now()->subMonth()->format('Y-m-d')) . ' 00:00')
+//            ->where('created_at', '<=', request('de', now()->format('Y-m-d')) . ' 23:59')
+//            ->get();
+//
+//        $parcels = [];
+//
+//        $status = __('ui.status');
+//
+//        $test = '';
+//        foreach ($items as $item)
+//        {
+//            $parcels[] = [
+//                'Трек-номер' => $item->track,
+//                'UID' => $item->user_id,
+//                'Вес' => $item->weight,
+//                'Дата' => null,
+//                'Статус' => $status[$item->status],
+//                'ИТ' => $item->integration_id,
+//                'Наименование' => $item->name,
+//                'Стоимость' => $item->prod_price,
+//                'Город доставки' => $item->city,
+//            ];
+//        }
+//        $list = collect($parcels);
+//
+//        return (new FastExcel($list))->download('file.xlsx');
+        if (!$request->hasFile('excel_file')) {
+            return back()->withErrors(['excel_file' => 'Необходимо загрузить файл.']);
         }
 
-        $items = Parcel::select(['user_id', 'track', 'city', 'name', 'weight', 'status', 'integration_id', 'date_out'])->where('status', $status)
-            ->where('country_out', $out)
-            ->where('created_at', '>=', request('ds', now()->subMonth()->format('Y-m-d')) . ' 00:00')
-            ->where('created_at', '<=', request('de', now()->format('Y-m-d')) . ' 23:59')
-            ->get();
+        // Загрузка файла
+        $file = $request->file('excel_file');
+        $spreadsheet = IOFactory::load($file->getPathname());
 
-        $parcels = [];
+        // Получение активного листа
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = $sheet->toArray(null, true, true, true);
 
-        $status = __('ui.status');
+        // Перебор строк и сохранение данных в базе
+        foreach ($rows as $i => $row) {
+            if ($i == 1) continue; // Пропускаем заголовок
 
-        $test = '';
-        foreach ($items as $item)
-        {
-            $parcels[] = [
-                'Трек-номер' => $item->track,
-                'UID' => $item->user_id,
-                'Вес' => $item->weight,
-                'Дата' => null,
-                'Статус' => $status[$item->status],
-                'ИТ' => $item->integration_id,
-                'Наименование' => $item->name,
-                'Стоимость' => $item->prod_price,
-                'Город доставки' => $item->city,
-            ];
+            $parcel = new Parcel();
+            $parcel->track = $row['A'] ?? null;
+            $parcel->user_id = $row['B'] ?? null;
+            $parcel->weight = $row['C'] ?? null;
+            $parcel->date_out = $row['D'] ?? null;
+            $parcel->status = $row['E'] ?? null;
+            $parcel->integration_id = $row['F'] ?? null;
+            $parcel->name = $row['G'] ?? null;
+            $parcel->prod_price = $row['H'] ?? null;
+            $parcel->city = $row['I'] ?? null;
+            $parcel->save();
         }
-        $list = collect($parcels);
 
-        return (new FastExcel($list))->download('file.xlsx');
+        return back()->with('success', 'Данные успешно импортированы.');
     }
 
     public function excel(Request $request, $id)
@@ -279,14 +313,21 @@ class ParcelController extends Controller
         $item = Excel::find($id);
         $t = $request->input('t', '');
 
-        $spreadsheet = IOFactory::load(storage_path('app/public/' . $item->getMedia('excel')->first()->id . '/' . $item->getMedia('excel')->first()->file_name));
+        // Проверка загрузки файла
+        $filePath = storage_path('app/public/' . $item->getMedia('excel')->first()->id . '/' . $item->getMedia('excel')->first()->file_name);
+        Log::info('File Path: ' . $filePath);
+
+        // Загрузка файла Excel
+        $spreadsheet = IOFactory::load($filePath);
         $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
+        Log::info('Sheet Data: ', $sheetData);
 
         $tracks = [];
         $tracks6 = [];
         $isset = [];
         $items2 = [];
         $tracks_full = [];
+
         foreach ($sheetData as $i => $c) {
             if ($i == 1) continue;
             if ($c['A']) {
@@ -297,13 +338,22 @@ class ParcelController extends Controller
             }
         }
 
-        $items0 = Parcel::whereIn('track', $tracks)->get();
+        // Логируем собранные треки
+        Log::info('Tracks: ', $tracks);
+        Log::info('Tracks6: ', $tracks6);
+        Log::info('Isset: ', $isset);
+        Log::info('Tracks Full: ', $tracks_full);
 
+        // Получение данных из базы данных
+        $items0 = Parcel::whereIn('track', $tracks)->get();
         $items1 = Parcel::whereNotIn('track', $tracks)->where(function ($q) use ($tracks6) {
             foreach ($tracks6 as $track) {
                 $q->orWhere('track', 'LIKE', '%' . $track . '%');
             }
         })->get();
+
+        Log::info('Items0: ', $items0->toArray());
+        Log::info('Items1: ', $items1->toArray());
 
         foreach ($items0 as $item) {
             if (isset($isset[(string)$item->track]))
@@ -323,7 +373,57 @@ class ParcelController extends Controller
             $items2[] = $item;
         }
 
+        Log::info('Items2: ', $items2);
+
         return view('admin.parcels.excel', compact('items0', 'items1', 'items2', 'id', 't', 'tracks', 'tracks6', 'tracks_full'));
+    }
+
+    public function exportExcel(Request $request)
+    {
+        // Создаем новый объект Spreadsheet
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Заголовки колонок
+        $headers = ['Трек-номер', 'UID', 'Вес', 'Дата', 'Статус', 'ИТ', 'Наименование', 'Стоимость', 'Город доставки'];
+        $column = 'A';
+        foreach ($headers as $header) {
+            $sheet->setCellValue($column . '1', $header);
+            $column++;
+        }
+
+        // Получение данных из базы данных
+        $parcels = Parcel::all();
+
+        // Заполнение данных
+        $row = 2;
+        foreach ($parcels as $parcel) {
+            $sheet->setCellValue('A' . $row, $parcel->track);
+            $sheet->setCellValue('B' . $row, $parcel->user_id);
+            $sheet->setCellValue('C' . $row, $parcel->weight);
+            $sheet->setCellValue('D' . $row, $parcel->date_out);
+            $sheet->setCellValue('E' . $row, $parcel->status);
+            $sheet->setCellValue('F' . $row, $parcel->integration_id);
+            $sheet->setCellValue('G' . $row, $parcel->name);
+            $sheet->setCellValue('H' . $row, $parcel->prod_price);
+            $sheet->setCellValue('I' . $row, $parcel->city);
+            $row++;
+        }
+
+        $filePath = 'public/exports/parcels.xlsx';
+        $storagePath = storage_path('app/' . $filePath);
+        $directory = dirname($storagePath);
+
+        // Проверка существования директории и создание при необходимости
+        if (!file_exists($directory)) {
+            mkdir($directory, 0777, true);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($storagePath);
+
+        // Возвращаем файл пользователю
+        return response()->download($storagePath)->deleteFileAfterSend(true);
     }
 
     public function replace(Request $request, $id)

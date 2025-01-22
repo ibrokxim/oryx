@@ -35,10 +35,8 @@ class ProfileParcelController extends Controller
             });
         });
 
-        // Сортировка и получение результатов
         $items = $query->orderBy('created_at', 'desc')->get();
 
-        // Добавление ФИО и дополнительных функций
         $items->transform(function ($item) {
             $item->recipient_fio = $item->recipient
                 ? implode(' ', array_filter([$item->recipient->name, $item->recipient->fname, $item->recipient->surname]))
@@ -48,12 +46,16 @@ class ProfileParcelController extends Controller
                 return [
                     'id' => $function->id,
                     'name' => $function->name,
-                    'description' => $function->description,
+                    'description' => $function->pivot->description ?? '',
+                    'prod_price' => $function->pivot->prod_price ?? 0,
                 ];
             });
 
             return $item;
         });
+
+        // Суммирование столбца prod_price у посылок, у которых payed = 0
+        $totalUnpaidPrice = $items->where('payed', 0)->sum('prod_price');
 
         $cities = [];
         if ($request->input('status') == 3) {
@@ -65,10 +67,16 @@ class ProfileParcelController extends Controller
                 }
             }
         }
-        $user_id = Auth::user()->id;
-        return response()->json(['items' => $items, 'cities' => $cities, 'user_id' => $user_id]);
 
+        $user_id = Auth::user()->id;
+        return response()->json([
+            'items' => $items,
+            'cities' => $cities,
+            'user_id' => $user_id,
+            'total_unpaid_price' => $totalUnpaidPrice,
+        ]);
     }
+
     public function store(Request $request)
     {
         DB::beginTransaction();

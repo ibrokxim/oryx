@@ -99,7 +99,7 @@
                     </form>
                     <form>
                         <a class="createrole"
-                           href="{{route('parcels.load',array_merge(['status'=>request('status',0)],request()->except('status')))}}">
+                           href="{{route('admin.export-excel',array_merge(['status'=>request('status',0)],request()->except('status')))}}">
                             <svg width="12" height="15" viewBox="0 0 12 15" fill="none"
                                  xmlns="http://www.w3.org/2000/svg">
                                 <rect x="0.384766" y="12.4219" width="10.7924" height="2" fill="#E65A57"/>
