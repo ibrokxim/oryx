@@ -262,6 +262,24 @@ class ProfileController extends Controller
         return response()->json(['notifications' => $items, 'unread_count' => $unreadCount], 200);
     }
 
+    public function unreadNotifications(Request $request)
+    {
+        $userId = Auth::user()->id;
+
+        $query = Notification::where('user_id', $userId)
+            ->orderBy('read')
+            ->orderBy('created_at', 'desc');
+
+        $unreadCount = $query->where('read', 0)->count();
+
+        if ($request->input('read')) {
+            $query = $query->where('read', 0);
+        }
+
+        $items = $query->get();
+        return response()->json(['notifications' => $items, 'unread_count' => $unreadCount], 200);
+    }
+
     public function notification(Request $request, $id)
     {
         $item = Notification::where('user_id', Auth::user()->id)->where('id', $id)->first();

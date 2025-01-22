@@ -28,6 +28,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('profile/success', [ProfileController::class, 'success']);
     Route::post('profile/error', [ProfileController::class, 'error']);
     Route::get('profile/notifications', [ProfileController::class, 'notifications']);
+    Route::get('profile/unotifications', [ProfileController::class, 'unreadNotifications']);
     Route::get('profile/notification/{id}', [ProfileController::class, 'notification']);
     Route::post('profile/notifications/read', [ProfileController::class, 'notificationsr']);
     Route::get('profile/transactions', [ProfileController::class, 'transactions']);
